@@ -2,17 +2,19 @@
 Launcher - Chọn chế độ chạy chương trình
 """
 
+import os
 import subprocess
 import sys
-import os
+
 
 def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
+
 
 def main():
     """Chạy full demo"""
     clear_screen()
-    
+
     print("=" * 60)
     print("  🔍 CHƯƠNG TRÌNH NHẬN DIỆN KHUÔN MẶT")
     print("=" * 60)
@@ -30,16 +32,16 @@ def main():
     print("  3️⃣  Thoát ❌")
     print()
     print("=" * 60)
-    
+
     while True:
         choice = input("\nNhập lựa chọn (1-3): ").strip()
-        
+
         if choice == "1":
             print("\n🚀 Đang khởi động GUI...")
             python_exe = sys.executable
             subprocess.run([python_exe, "gui_app.py"])
             break
-            
+
         elif choice == "2":
             print("\n� PYTHON API SERVICES")
             print("\nSử dụng trong code:")
@@ -60,19 +62,20 @@ def main():
             print()
             print("📖 Xem thêm: ARCHITECTURE.md")
             print()
-            
+
             run_gui = input("Mở GUI? (y/n): ").strip().lower()
-            if run_gui == 'y':
+            if run_gui == "y":
                 python_exe = sys.executable
                 subprocess.run([python_exe, "gui_app.py"])
             break
-            
+
         elif choice == "3":
             print("\n👋 Tạm biệt!")
             break
-            
+
         else:
             print("❌ Lựa chọn không hợp lệ. Vui lòng chọn 1, 2 hoặc 3.")
+
 
 if __name__ == "__main__":
     main()
