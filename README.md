@@ -6,7 +6,7 @@ Hệ thống nhận diện khuôn mặt tiên tiến với giao diện đồ h�
 
 ### 📸 Đăng ký khuôn mặt
 - **Đăng ký từ file**: Hỗ trợ ảnh (.jpg, .png) và video (.mp4, .avi)
-- **Đăng ký từ webcam**: 
+- **Đăng ký từ webcam**:
   - 📸 Chụp ảnh nhanh
   - 🎥 Ghi video (lưu toàn bộ frame, không giới hạn)
 - **Phát hiện trùng lặp**: Tự động so sánh với database, hiển thị 3 lựa chọn:
@@ -24,7 +24,7 @@ Hệ thống nhận diện khuôn mặt tiên tiến với giao diện đồ h�
 - **Nhận diện từ file**: Xử lý ảnh và video
 - **Nhận diện webcam**: Thời gian thực với hiển thị thông tin chi tiết
 - **Ghi lại video**: Lưu video nhận diện với đầy đủ frame
-- **Hiển thị thông tin**: 
+- **Hiển thị thông tin**:
   - Ảnh: 5 dòng với emoji (👤 Name, ⚧ Gender, 🎂 Birth Year, 🏠 Hometown, 📍 Residence)
   - Webcam: 5 dòng viết tắt (Name, GT:, NS:, QQ:, O:)
 
@@ -65,7 +65,7 @@ pip install -r requirements.txt
 .\start_gui.bat
 ```
 
-**Thời gian:** ~15-20 phút (lần đầu)  
+**Thời gian:** ~15-20 phút (lần đầu)
 **Yêu cầu:** Python 3.9+, Git
 
 ---
@@ -426,7 +426,7 @@ python manage_database.py
 
 ### Python Development
 - **Python** - ms-python.python
-- **Pylance** - ms-python.vscode-pylance  
+- **Pylance** - ms-python.vscode-pylance
 - **Black Formatter** - ms-python.black-formatter
 
 ### Git Management
@@ -515,6 +515,6 @@ MIT License - Xem file LICENSE để biết thêm chi tiết.
 
 ---
 
-**Phát triển bởi**: [Tên của bạn]  
-**Phiên bản**: 2.0 (Database V2 - Folder-based Architecture)  
+**Phát triển bởi**: [Tên của bạn]
+**Phiên bản**: 2.0 (Database V2 - Folder-based Architecture)
 **Cập nhật**: 2024
