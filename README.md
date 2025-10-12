@@ -44,20 +44,65 @@ Xem file `requirements.txt` để biết chi tiết đầy đủ.
 
 ## 🚀 Cài đặt
 
+### ⚡ Quick Start (Cho người mới clone)
+
+**Windows - Auto Setup:**
+```powershell
+# Clone repository
+git clone https://github.com/hoangphuc173/face_recognition.git
+cd face_recognition
+
+# Kích hoạt virtual environment
+.venv\Scripts\Activate.ps1
+
+# Cài đặt dependencies
+pip install -r requirements.txt
+
+# Chạy test
+.\test.bat
+
+# Chạy ứng dụng
+.\start_gui.bat
+```
+
+**Thời gian:** ~15-20 phút (lần đầu)  
+**Yêu cầu:** Python 3.9+, Git
+
+---
+
+### 📋 Hướng dẫn chi tiết
+
 ### 1. Clone hoặc tải về repository
 
 ```bash
-git clone <repository-url>
-cd facerecog
+git clone https://github.com/hoangphuc173/face_recognition.git
+cd face_recognition
 ```
 
-### 2. Tạo môi trường ảo (khuyến nghị)
+**Nếu chưa có Git:**
+- Tải từ: https://git-scm.com/download/win
+- Hoặc tải ZIP từ GitHub → Extract
+
+### 2. Kiểm tra Python
+
+```powershell
+python --version
+```
+
+**Yêu cầu:** Python 3.9 hoặc cao hơn
+
+**Nếu chưa có Python:**
+1. Tải từ: https://www.python.org/downloads/
+2. ✅ Tick "Add Python to PATH" khi cài đặt
+3. Khởi động lại Terminal
+
+### 3. Tạo môi trường ảo (khuyến nghị)
 
 ```bash
 python -m venv .venv
 ```
 
-### 3. Kích hoạt môi trường ảo
+### 4. Kích hoạt môi trường ảo
 
 **Windows (PowerShell):**
 ```powershell
@@ -74,15 +119,115 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 4. Cài đặt dependencies
+**Kiểm tra:** Terminal hiển thị `(.venv)` ở đầu dòng
+
+### 5. Cài đặt dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Lưu ý quan trọng cho Windows:**
-- `face-recognition` yêu cầu `dlib` và `cmake`
-- Nếu gặp lỗi, cài đặt pre-built wheel từ: https://github.com/ageitgey/face_recognition#installation
+**Thời gian:** ~5-10 phút
+
+#### ⚠️ Xử lý lỗi Windows
+
+**Lỗi: "Microsoft Visual C++ 14.0 is required"**
+
+**Giải pháp 1: Pre-built Wheel (Dễ nhất)**
+```powershell
+# Tải dlib wheel cho Python 3.9 Windows
+pip install https://github.com/jloh02/dlib/releases/download/v19.24.1/dlib-19.24.1-cp39-cp39-win_amd64.whl
+
+# Sau đó cài lại requirements
+pip install -r requirements.txt
+```
+
+**Giải pháp 2: Visual Studio Build Tools**
+```powershell
+# Mở link tải
+start https://visualstudio.microsoft.com/visual-cpp-build-tools/
+# Cài đặt, chọn "Desktop development with C++"
+```
+
+### 6. Verify Installation
+
+```powershell
+# Chạy script test
+.\test.bat
+```
+
+**Kết quả mong đợi:**
+```
+========================================
+  Face Recognition System - TEST
+========================================
+
+[1/3] Testing Python syntax...
+[2/3] Checking database...
+Database OK: 0 people
+[3/3] Running import checks...
+All imports successful!
+
+========================================
+  ALL TESTS PASSED!
+========================================
+```
+
+### 7. Chạy ứng dụng
+
+**Cách 1: Double-click (Dễ nhất)**
+```
+Double-click: start_gui.bat
+```
+
+**Cách 2: Command Line**
+```powershell
+python gui_app.py
+```
+
+**Cách 3: Launcher Menu**
+```powershell
+python launcher.py
+```
+
+---
+
+## 🔄 Cập nhật Code (Pull từ GitHub)
+
+```powershell
+# Kéo code mới nhất
+git pull origin master
+
+# Cài đặt lại dependencies (nếu có update)
+pip install -r requirements.txt --upgrade
+
+# Test lại hệ thống
+.\test.bat
+```
+
+---
+
+## 🛠️ Utility Scripts
+
+### Dọn dẹp hệ thống:
+```powershell
+.\clean.bat
+```
+Xóa: `__pycache__/`, `*.pyc`, `temp/`, files trong `recognized/`
+
+### Format code (cho developers):
+```powershell
+.\format.bat
+```
+Chạy: `isort` + `black` formatter
+
+### Test hệ thống:
+```powershell
+.\test.bat
+```
+Kiểm tra: syntax, database, imports
+
+---
 
 ## 🎮 Sử dụng
 
