@@ -1,0 +1,23 @@
+[package]
+name = "image-processor-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lambda_runtime = "0.8"
+tokio = { version = "1", features = ["macros"] }
+serde = "1.0"
+serde_json = "1.0"
+aws-config = "1.0"
+aws-sdk-s3 = "1.2"
+aws-sdk-rekognition = "1.2"
+aws-sdk-dynamodb = "1.2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json"] }
+
+[profile.release]
+opt-level = 'z'
+strip = true
+lto = true
+codegen-units = 1
+panic = 'abort'

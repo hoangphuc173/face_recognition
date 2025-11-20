@@ -1,0 +1,26 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E203, W503
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    env,
+    build,
+    dist,
+    node_modules,
+    aws/infrastructure/cdk/cdk.out,
+    aws/infrastructure/cdk/node_modules,
+    aws/backend/lambda/functions/*/numpy,
+    aws/backend/lambda/functions/*/PIL,
+    aws/backend/lambda/functions/*/redis,
+    aws/backend/lambda/functions/*/boto3,
+    aws/backend/lambda/functions/*/botocore,
+    aws/backend/lambda/functions/*/dateutil,
+    aws/backend/lambda/functions/*/jmespath,
+    aws/backend/lambda/functions/*/urllib3,
+    aws/backend/lambda/functions/*/s3transfer,
+    aws/backend/lambda/functions/*/site-packages,
+    aws/backend/lambda/layers,
+    aws/backend/lambda/functions/*/venv
+

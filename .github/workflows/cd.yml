@@ -1,0 +1,91 @@
+name: Realtime CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+        default: dev
+  workflow_run:
+    workflows: ["Realtime CI"]
+    types:
+      - completed
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev' }}
+    env:
+      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev' }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: pip-deploy-${{ hashFiles('requirements.txt') }}
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Smoke tests
+      run: pytest tests/test_health.py
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "18"
+
+    - name: Cache node modules
+      uses: actions/cache@v4
+      with:
+        path: aws/infrastructure/cdk/node_modules
+        key: cdk-node-${{ hashFiles('aws/infrastructure/cdk/package-lock.json') }}
+
+    - name: Install CDK dependencies
+      working-directory: aws/infrastructure/cdk
+      run: npm ci
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: CDK synth
+      working-directory: aws/infrastructure/cdk
+      run: npx cdk synth
+
+    - name: Deploy CDK stack
+      working-directory: aws/infrastructure/cdk
+      env:
+        ENVIRONMENT: ${{ env.DEPLOY_ENV }}
+        COGNITO_ENABLED: true
+        WS_API_KEY: ${{ env.DEPLOY_ENV == 'prod' && secrets.WS_API_KEY_PROD || secrets.WS_API_KEY_DEV }}
+        WS_API_KEY_HEADER: x-api-key
+      run: |
+        npx cdk deploy --require-approval never
+

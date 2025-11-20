@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-11-21T05:00:00.000Z" agent="Mozilla/5.0" version="22.1.11" etag="deployment-diagram" type="device">
+  <diagram name="Deployment Diagram" id="deployment-diagram">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Title -->
+        <mxCell id="title" value="Face Recognition System - Deployment Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="1000" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- AWS Cloud Container -->
+        <mxCell id="aws-cloud" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#FF9900;strokeWidth=3;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="1640" height="1220" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="aws-label" value="AWS Cloud (ap-southeast-1)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#FF9900" vertex="1" parent="1">
+          <mxGeometry x="100" y="110" width="400" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- Region: ap-southeast-1 -->
+        <mxCell id="region" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#232F3E;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="120" y="160" width="1560" height="1120" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="region-label" value="Region: ap-southeast-1 (Singapore)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="170" width="1560" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- VPC (Future) -->
+        <mxCell id="vpc-note" value="VPC (Future Implementation)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#3334B9;strokeWidth=2;dashed=1;fontSize=14;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="140" y="220" width="1520" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- CloudFormation Stacks -->
+        <mxCell id="cfn-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9E6;strokeColor=#F9A825;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="140" y="280" width="1520" height="180" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cfn-title" value="CloudFormation Stacks" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="140" y="290" width="1520" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- Stack 1: Minimal -->
+        <mxCell id="stack-minimal" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="180" y="340" width="440" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-minimal-title" value="FaceRecognitionMinimal-Stack" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="345" width="440" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-minimal-resources" value="• 3 DynamoDB Tables&#xa;• 1 Cognito User Pool&#xa;• 3 SSM Parameters&#xa;• IAM Roles" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="190" y="370" width="420" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Stack 2: Extended -->
+        <mxCell id="stack-extended" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="660" y="340" width="440" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-extended-title" value="FaceRecognitionExtended-Stack" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="660" y="345" width="440" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-extended-resources" value="• API Gateway REST API&#xa;• 4 Lambda Functions (Health, People, Stats, Thresholds)&#xa;• CloudWatch Log Groups&#xa;• Lambda Layers" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="670" y="370" width="420" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Stack 3: Business -->
+        <mxCell id="stack-business" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C7131F;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="340" width="440" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-business-title" value="FaceRecognitionBusiness-Stack" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1140" y="345" width="440" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="stack-business-resources" value="• 2 Lambda Functions (Enroll, Identify)&#xa;• S3 Bucket (Image Storage)&#xa;• Rekognition Collection&#xa;• API Gateway Integration" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="370" width="420" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Compute Layer -->
+        <mxCell id="compute-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="140" y="500" width="740" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="compute-title" value="Compute Layer - AWS Lambda" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="140" y="510" width="740" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- Lambda Functions -->
+        <mxCell id="lambda-extended" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="180" y="560" width="320" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-extended-title" value="Extended Lambda Functions" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="565" width="320" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-1" value="🔹 HealthFunction&#xa;GET /health" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673A6;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="200" y="600" width="280" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-2" value="🔹 ListPeopleFunction&#xa;GET /people" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673A6;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="200" y="660" width="280" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-3" value="🔹 DbStatsFunction&#xa;GET /stats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673A6;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="200" y="720" width="280" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-4" value="🔹 GetThresholdsFunction&#xa;GET /thresholds" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9673A6;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="200" y="780" width="280" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-business" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C7131F;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="560" width="320" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-business-title" value="Business Lambda Functions" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="540" y="565" width="320" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-5" value="🔸 EnrollFunction&#xa;POST /enroll&#xa;(Face Registration)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C7131F;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="560" y="600" width="280" height="110" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="lambda-6" value="🔸 IdentifyFunction&#xa;POST /identify&#xa;(Face Recognition)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C7131F;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="560" y="720" width="280" height="110" as="geometry"/>
+        </mxCell>
+        
+        <!-- API Gateway -->
+        <mxCell id="api-gateway" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="920" y="500" width="380" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="api-title" value="API Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="920" y="510" width="380" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="api-url" value="Base URL:&#xa;https://r7hwlthie5.execute-api.ap-southeast-1.amazonaws.com/prod/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#3334B9;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="940" y="550" width="340" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="api-endpoints-title" value="Endpoints:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="940" y="620" width="340" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="api-endpoints" value="✓ GET /health&#xa;✓ GET /people&#xa;✓ GET /stats&#xa;✓ GET /thresholds&#xa;✓ POST /enroll&#xa;✓ POST /identify" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="950" y="650" width="320" height="120" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="api-features" value="Features:&#xa;• CORS Enabled&#xa;• JSON Request/Response&#xa;• CloudWatch Logging&#xa;• Rate Limiting Ready" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="940" y="780" width="340" height="70" as="geometry"/>
+        </mxCell>
+        
+        <!-- Storage & Data Layer -->
+        <mxCell id="storage-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#3334B9;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="140" y="900" width="1160" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="storage-title" value="Storage &amp; Data Layer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="140" y="910" width="1160" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- DynamoDB -->
+        <mxCell id="dynamodb-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3334B9;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="180" y="960" width="340" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="dynamodb-title" value="Amazon DynamoDB" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="965" width="340" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ddb-table1" value="📊 Users Table&#xa;PK: person_id&#xa;GSI: user_name" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1000" width="300" height="65" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ddb-table2" value="📊 Embeddings Table&#xa;PK: person_id&#xa;SK: face_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1080" width="300" height="65" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ddb-table3" value="📊 AccessLogs Table&#xa;PK: log_id&#xa;SK: timestamp (TTL: 30 days)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1160" width="300" height="65" as="geometry"/>
+        </mxCell>
+        
+        <!-- S3 -->
+        <mxCell id="s3-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="560" y="960" width="340" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="s3-title" value="Amazon S3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="560" y="965" width="340" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="s3-bucket" value="🗂️ S3 Bucket&#xa;face-recognition-images-prod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;align=center;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="580" y="1010" width="300" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="s3-folders" value="📁 enrollments/&#xa;   └─ {person_id}.jpg&#xa;📁 temp/&#xa;   └─ processing files" style="text;html=1;strokeColor=none;fillColor=#D5E8D4;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="580" y="1090" width="300" height="80" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="s3-features" value="• Versioning: Disabled&#xa;• Encryption: AES-256&#xa;• Public Access: Blocked" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="580" y="1185" width="300" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- SSM Parameter Store -->
+        <mxCell id="ssm-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BC1356;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="940" y="960" width="340" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ssm-title" value="Systems Manager" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="940" y="965" width="340" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ssm-subtitle" value="Parameter Store" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="940" y="990" width="340" height="20" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ssm-param1" value="⚙️ /threshold/attendance&#xa;Value: 90" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#BC1356;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1025" width="300" height="55" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ssm-param2" value="⚙️ /threshold/access_control&#xa;Value: 95" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#BC1356;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1095" width="300" height="55" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ssm-param3" value="⚙️ /threshold/financial&#xa;Value: 98" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#BC1356;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1165" width="300" height="55" as="geometry"/>
+        </mxCell>
+        
+        <!-- AI/ML Services -->
+        <mxCell id="aiml-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="500" width="360" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="aiml-title" value="AI/ML Services" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1340" y="510" width="360" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rekognition-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#277116;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="560" width="320" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rekognition-title" value="Amazon Rekognition" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1360" y="565" width="320" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rekognition-collection" value="🤖 Face Collection&#xa;face-recognition-collection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#277116;fontSize=13;align=center;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1380" y="610" width="280" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rekognition-features" value="Operations:&#xa;• IndexFaces (Enrollment)&#xa;• SearchFacesByImage (Identify)&#xa;• DeleteFaces (Remove)&#xa;• ListFaces (View all)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="685" width="280" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rekognition-stats" value="📊 Current Stats:&#xa;• Total Faces: 0&#xa;• Collection Status: ACTIVE&#xa;• Region: ap-southeast-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9E6;strokeColor=#F9A825;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="785" width="280" height="45" as="geometry"/>
+        </mxCell>
+        
+        <!-- Monitoring -->
+        <mxCell id="monitoring-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C7131F;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="900" width="360" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="monitoring-title" value="Monitoring &amp; Logging" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1340" y="910" width="360" height="30" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudwatch" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C7131F;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="960" width="320" height="140" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudwatch-title" value="Amazon CloudWatch" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=15;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1360" y="965" width="320" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudwatch-logs" value="📝 Log Groups:&#xa;• /aws/lambda/enroll-function&#xa;• /aws/lambda/identify-function&#xa;• /aws/lambda/health-function&#xa;• /aws/apigateway/access-logs" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="995" width="300" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudformation" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#F9A825;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1120" width="320" height="120" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudformation-title" value="AWS CloudFormation" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=15;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1125" width="320" height="25" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cloudformation-info" value="📦 Deployment Info:&#xa;• Tool: AWS CDK 2.1031.2&#xa;• Language: TypeScript&#xa;• Total Resources: 75&#xa;• Deploy Time: ~3 minutes" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="1155" width="300" height="75" as="geometry"/>
+        </mxCell>
+        
+        <!-- Connections (arrows will be added in diagrams.net) -->
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,51 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd": {
+      "displayName": "EnrollFunction/Code",
+      "source": {
+        "path": "asset.6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "758934444761-ap-southeast-1-055cef98": {
+          "bucketName": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+          "objectKey": "6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd.zip",
+          "region": "ap-southeast-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::758934444761:role/cdk-hnb659fds-file-publishing-role-758934444761-ap-southeast-1"
+        }
+      }
+    },
+    "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d": {
+      "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+      "source": {
+        "path": "asset.2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "758934444761-ap-southeast-1-4a96fcd3": {
+          "bucketName": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+          "objectKey": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip",
+          "region": "ap-southeast-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::758934444761:role/cdk-hnb659fds-file-publishing-role-758934444761-ap-southeast-1"
+        }
+      }
+    },
+    "8a59850ac0203a6ba1fcfaddb79053d67c9acc36a20f8785f7caf87d8cea818a": {
+      "displayName": "FaceRecognitionBusiness Template",
+      "source": {
+        "path": "FaceRecognitionBusiness.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "758934444761-ap-southeast-1-5b6dea55": {
+          "bucketName": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+          "objectKey": "8a59850ac0203a6ba1fcfaddb79053d67c9acc36a20f8785f7caf87d8cea818a.json",
+          "region": "ap-southeast-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::758934444761:role/cdk-hnb659fds-file-publishing-role-758934444761-ap-southeast-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

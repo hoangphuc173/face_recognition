@@ -1,0 +1,8 @@
+[MESSAGES CONTROL]
+disable=import-error,no-name-in-module,missing-docstring,invalid-name
+
+[TYPECHECK]
+ignored-modules=boto3,botocore,fastapi,pydantic,pytest,torch,torchvision,sagemaker,redis,yaml,uvicorn,cv2
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,x,y,id,db

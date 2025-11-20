@@ -1,0 +1,250 @@
+=============================================================================
+                    CHỨC NĂNG IDENTIFY (NHẬN DIỆN)
+=============================================================================
+
+CÁCH HOẠT ĐỘNG:
+---------------
+
+1. USER CHỤP ẢNH
+   └─> Camera hoặc upload file ảnh
+
+2. DETECT FACE
+   └─> AWS Rekognition phát hiện khuôn mặt trong ảnh
+   └─> Trích xuất face features (512 dimensions embedding)
+
+3. SEARCH COLLECTION
+   └─> So sánh với TẤT CẢ khuôn mặt đã đăng ký trong Rekognition Collection
+   └─> Tính similarity score (0-100%)
+   └─> Lọc theo threshold (mặc định 80%)
+
+4. GET METADATA
+   └─> Lấy thông tin chi tiết từ DynamoDB
+   └─> person_id, user_name, gender, birth_year, hometown, residence
+
+5. RETURN RESULT
+   └─> Danh sách các khuôn mặt khớp
+   └─> Mỗi khuôn mặt có: tên, độ tin cậy, thông tin cá nhân
+
+
+=============================================================================
+                         SỬ DỤNG TRONG GUI
+=============================================================================
+
+1. Mở GUI application
+2. Click "Start Camera"
+3. Click "Identify Now"
+4. Kết quả hiển thị:
+   - Tên người
+   - Độ tin cậy (%)
+   - Thông tin chi tiết (gender, năm sinh, quê quán)
+
+
+=============================================================================
+                        SỬ DỤNG QUA API
+=============================================================================
+
+ENDPOINT:
+   POST http://127.0.0.1:8888/api/v1/identify
+
+REQUEST:
+   Content-Type: multipart/form-data
+   
+   Form data:
+   - image: file (required)
+   - threshold: float (optional, default: 0.6)
+
+EXAMPLE (cURL):
+   curl -X POST "http://127.0.0.1:8888/api/v1/identify" \
+        -F "image=@photo.jpg" \
+        -F "threshold=0.8"
+
+EXAMPLE (Python):
+   import requests
+   
+   with open('photo.jpg', 'rb') as f:
+       files = {'image': f}
+       params = {'threshold': 0.8}
+       response = requests.post(
+           'http://127.0.0.1:8888/api/v1/identify',
+           files=files,
+           params=params
+       )
+       result = response.json()
+
+RESPONSE:
+   {
+     "success": true,
+     "faces_detected": 1,
+     "processing_time_ms": 1234.56,
+     "faces": [
+       {
+         "person_id": "person_abc123",
+         "user_name": "Nguyen Van A",
+         "gender": "Nam",
+         "birth_year": "1990",
+         "hometown": "Ha Noi",
+         "residence": "Ho Chi Minh",
+         "confidence": 0.95,
+         "similarity": 95.5,
+         "face_id": "face_xyz789",
+         "match_time": "2025-11-19T15:30:00"
+       }
+     ]
+   }
+
+
+=============================================================================
+                        PARAMETERS
+=============================================================================
+
+threshold (float):
+   - Ngưỡng độ tin cậy để chấp nhận match
+   - Range: 0.0 - 1.0 (hoặc 0 - 100%)
+   - Default: 0.6 (60%)
+   - Giá trị thấp: Ít chặt chẽ, có thể có false positive
+   - Giá trị cao: Chặt chẽ hơn, giảm false positive nhưng có thể miss
+
+   Recommended values:
+   - 0.5 (50%): Rất lỏng, dùng khi muốn tìm nhiều matches
+   - 0.6 (60%): Default, cân bằng
+   - 0.7 (70%): Chặt hơn
+   - 0.8 (80%): Rất chặt, high precision
+   - 0.9 (90%): Cực kỳ chặt, chỉ accept exact match
+
+max_results (int):
+   - Số lượng kết quả tối đa trả về
+   - Default: 5
+   - Range: 1 - 100
+
+
+=============================================================================
+                        TEST SCRIPTS
+=============================================================================
+
+TEST TỪ CAMERA:
+   cd C:\Users\ADMIN\Downloads\facerecog\aws
+   python test_identify.py
+   # Chọn option 1
+
+TEST TỪ FILE:
+   python test_identify.py
+   # Chọn option 2
+   # Nhập đường dẫn file ảnh
+
+TEST THRESHOLD:
+   python test_identify.py
+   # Chọn option 3
+   # Test với các threshold 0.5, 0.6, 0.7, 0.8, 0.9
+
+BENCHMARK:
+   python test_identify.py
+   # Chọn option 4
+   # Chạy 10 lần và tính trung bình
+
+
+=============================================================================
+                     FLOW TRONG CODE
+=============================================================================
+
+1. API Endpoint (app.py):
+   @app.post("/api/v1/identify")
+   async def identify_face(image, threshold)
+   
+2. Identification Service:
+   identification_service.identify_face(image_bytes, threshold)
+   
+3. Rekognition Client:
+   rekognition.search_faces(image_bytes, threshold)
+   └─> AWS API: rekognition.search_faces_by_image()
+   
+4. Database Manager:
+   db.get_people_batch(person_ids)
+   └─> DynamoDB: batch_get_item()
+   
+5. Return Result:
+   {faces: [...], confidence: ..., ...}
+
+
+=============================================================================
+                        PERFORMANCE
+=============================================================================
+
+Thời gian xử lý trung bình:
+   - Detect face: 200-400ms (AWS Rekognition)
+   - Search collection: 300-600ms (tùy số người đã enroll)
+   - Get metadata: 50-100ms (DynamoDB)
+   - Total: ~500-1000ms
+
+Optimize:
+   - Batch get metadata thay vì từng person một
+   - Cache kết quả nếu cùng ảnh
+   - Resize ảnh trước khi gửi AWS (giảm bandwidth)
+
+
+=============================================================================
+                          ACCURACY
+=============================================================================
+
+Độ chính xác phụ thuộc:
+   - Chất lượng ảnh (độ phân giải, ánh sáng)
+   - Góc chụp (frontal face tốt nhất)
+   - Số lượng ảnh enrolled (nhiều ảnh = accuracy cao hơn)
+   - Threshold setting
+
+Best practices:
+   - Enroll ít nhất 3-5 ảnh/người
+   - Ảnh có ánh sáng tốt
+   - Khuôn mặt rõ ràng, không bị che
+   - Nhiều góc độ khác nhau
+
+
+=============================================================================
+                          ERRORS
+=============================================================================
+
+"No matching faces found":
+   → Không tìm thấy ai khớp với threshold hiện tại
+   → Thử giảm threshold xuống
+
+"Face search failed":
+   → AWS Rekognition error
+   → Kiểm tra: Rekognition collection có tồn tại không
+   → Kiểm tra: AWS credentials còn hợp lệ không
+
+"Collection does not exist":
+   → Chưa tạo Rekognition collection
+   → Fix: aws rekognition create-collection --collection-id ...
+
+"Invalid image":
+   → Ảnh không hợp lệ hoặc không có khuôn mặt
+   → Thử ảnh khác
+
+
+=============================================================================
+                      COST ESTIMATE (AWS)
+=============================================================================
+
+Rekognition Pricing (ap-southeast-1):
+   - Search faces: $0.001 per image
+   - 1000 searches = $1.00
+
+DynamoDB:
+   - Read: Free tier 25 RCU/month
+   - Sau đó: $0.00013 per read request
+
+S3:
+   - Storage: $0.025 per GB/month
+   - GET request: $0.0004 per 1000 requests
+
+VÍ DỤ:
+   - 1000 identifies/ngày
+   - = 30000 identifies/tháng
+   - = ~$30/tháng cho Rekognition
+   - + ~$2/tháng cho DynamoDB + S3
+   - Total: ~$32/tháng
+
+
+=============================================================================
+Chi tiết code: backend/core/identification_service.py
+API docs: http://127.0.0.1:8888/docs
+=============================================================================

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AWS Realtime Face Recognition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      body {
+        background: #0b0c10;
+        color: #f4f4f4;
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+      }
+      .card {
+        background: #15171e;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      }
+      #login-container {
+        max-width: 400px;
+        width: 100%;
+      }
+      label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 8px;
+        border: none;
+        margin: 0.3rem 0 1rem 0;
+        background: #1f212b;
+        color: #f4f4f4;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 0.7rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-right: 0.5rem;
+      }
+      button.primary {
+        background: #00c2ff;
+        color: #010101;
+        font-weight: 600;
+      }
+      button.secondary {
+        background: #2f374f;
+        color: #fff;
+      }
+      button.danger {
+        background: #ff4f5a;
+        color: #fff;
+      }
+      #video,
+      canvas {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #1f212b;
+        background: #000;
+      }
+      pre {
+        background: #0f1116;
+        padding: 1rem;
+        border-radius: 12px;
+        white-space: pre-wrap;
+        max-height: 260px;
+        overflow: auto;
+      }
+      .status {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+      #login-status {
+        color: #ff4f5a;
+        text-align: center;
+        margin-top: 1rem;
+      }
+      #main-container {
+        width: 100%;
+      }
+      .header-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="login-container" class="card">
+        <h2>🔐 Đăng nhập</h2>
+        <label for="username">Tên đăng nhập</label>
+        <input id="username" type="text" value="admin" />
+        <label for="password">Mật khẩu</label>
+        <input id="password" type="password" value="admin" />
+        <button id="login-button" class="primary" style="width: 100%;">Đăng nhập</button>
+        <p id="login-status"></p>
+    </div>
+
+    <div id="main-container" style="display: none;">
+        <div class="header-bar">
+            <h1>Realtime Face Recognition (AWS)</h1>
+            <button id="logout-button" class="danger">Đăng xuất</button>
+        </div>
+        <div class="grid">
+        <section class="card">
+            <h2>⚙️ Cấu hình</h2>
+            <label for="api-url">API Gateway URL</label>
+            <input
+            id="api-url"
+            type="text"
+            value="https://s86huzh4s7.execute-api.ap-southeast-1.amazonaws.com/dev"
+            placeholder="https://xxx.execute-api.amazonaws.com/dev"
+            />
+            <label for="threshold">Threshold (0.0 - 1.0)</label>
+            <input id="threshold" type="number" min="0" max="1" step="0.05" value="0.6" />
+            <label for="mode">Trigger</label>
+            <select id="mode">
+            <option value="manual">Manual</option>
+            <option value="auto">Auto (2s)</option>
+            </select>
+            <label for="transport">Transport</label>
+            <select id="transport">
+            <option value="rest">REST (polling)</option>
+            <option value="websocket">WebSocket (streaming)</option>
+            </select>
+            <label for="ws-url">WebSocket URL (optional)</label>
+            <input id="ws-url" type="text" placeholder="wss://xxx.execute-api.amazonaws.com/dev" />
+            <label for="api-key-header">API Key Header</label>
+            <input id="api-key-header" type="text" value="x-api-key" />
+            <label for="api-key">API Key Value (optional)</label>
+            <input id="api-key" type="password" placeholder="Nhập API key nếu được bật" />
+            <label for="jwt-token">JWT Token (tự động điền sau khi đăng nhập)</label>
+            <input id="jwt-token" type="text" readonly />
+            <label for="client-id">Client ID</label>
+            <input id="client-id" type="text" />
+            <label>
+            <input id="telemetry-enabled" type="checkbox" checked />
+            Gửi telemetry (CloudWatch)
+            </label>
+            <div>
+            <button class="primary" id="start-camera">Bật Camera</button>
+            <button class="secondary" id="identify">Nhận diện</button>
+            <button class="danger" id="stop-camera">Tắt Camera</button>
+            <button class="secondary" id="connect-ws">Kết nối WS</button>
+            <button class="danger" id="disconnect-ws">Ngắt WS</button>
+            </div>
+            <p class="status" id="status">Camera chưa bật.</p>
+        </section>
+
+        <section class="card">
+            <h2>📹 Camera</h2>
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="canvas" hidden></canvas>
+        </section>
+
+        <section class="card">
+            <h2>🧠 Kết quả</h2>
+            <pre id="results">Chưa có kết quả.</pre>
+        </section>
+        </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const loginContainer = document.getElementById('login-container');
+      const mainContainer = document.getElementById('main-container');
+      const loginButton = document.getElementById('login-button');
+      const logoutButton = document.getElementById('logout-button');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const loginStatus = document.getElementById('login-status');
+
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const apiInput = document.getElementById("api-url");
+      const thresholdInput = document.getElementById("threshold");
+      const statusLabel = document.getElementById("status");
+      const resultsEl = document.getElementById("results");
+      const modeSelect = document.getElementById("mode");
+      const apiKeyInput = document.getElementById("api-key");
+      const apiKeyHeaderInput = document.getElementById("api-key-header");
+      const wsUrlInput = document.getElementById("ws-url");
+      const transportSelect = document.getElementById("transport");
+      const tokenInput = document.getElementById("jwt-token");
+      const clientIdInput = document.getElementById("client-id");
+      const telemetryCheckbox = document.getElementById("telemetry-enabled");
+      
+      // App State
+      let stream = null;
+      let autoTimer = null;
+      let ws = null;
+      let wsPendingStart = null;
+      clientIdInput.value = `web-${Date.now()}`;
+
+      // --- AUTHENTICATION LOGIC ---
+      function showLogin() {
+          loginContainer.style.display = 'block';
+          mainContainer.style.display = 'none';
+          stopCamera();
+          disconnectWebSocket();
+          tokenInput.value = '';
+          localStorage.removeItem('jwt_token');
+      }
+
+      function showMainApp(token) {
+          loginContainer.style.display = 'none';
+          mainContainer.style.display = 'block';
+          tokenInput.value = token;
+          localStorage.setItem('jwt_token', token);
+      }
+
+      async function handleLogin() {
+          const username = usernameInput.value.trim();
+          const password = passwordInput.value.trim();
+          const apiUrl = apiInput.value.trim();
+
+          if (!username || !password) {
+              loginStatus.textContent = 'Vui lòng nhập tên đăng nhập và mật khẩu.';
+              return;
+          }
+          loginStatus.textContent = 'Đang đăng nhập...';
+
+          try {
+              const response = await fetch(`${apiUrl}/auth/login`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ username, password })
+              });
+
+              if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(errorData.detail || 'Đăng nhập thất bại');
+              }
+
+              const data = await response.json();
+              showMainApp(data.access_token);
+
+          } catch (err) {
+              loginStatus.textContent = `Lỗi: ${err.message}`;
+          }
+      }
+
+      function handleLogout() {
+          showLogin();
+      }
+
+      // Check for existing token on page load
+      document.addEventListener('DOMContentLoaded', () => {
+          const storedToken = localStorage.getItem('jwt_token');
+          if (storedToken) {
+              showMainApp(storedToken);
+          } else {
+              showLogin();
+          }
+      });
+
+      loginButton.addEventListener('click', handleLogin);
+      logoutButton.addEventListener('click', handleLogout);
+
+      // --- MAIN APP LOGIC ---
+      async function startCamera() {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = stream;
+          statusLabel.textContent = "Camera đã bật.";
+          if (modeSelect.value === "auto") {
+            scheduleAutoCapture();
+          }
+        } catch (err) {
+          statusLabel.textContent = `Không thể bật camera: ${err.message}`;
+        }
+      }
+
+      function stopCamera() {
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+        }
+        stream = null;
+        video.srcObject = null;
+        clearTimeout(autoTimer);
+        statusLabel.textContent = "Camera đã tắt.";
+      }
+
+      function scheduleAutoCapture() {
+        clearTimeout(autoTimer);
+        if (modeSelect.value !== "auto") {
+          return;
+        }
+        autoTimer = setTimeout(async () => {
+          await identify();
+          scheduleAutoCapture();
+        }, 2000);
+      }
+
+      async function captureFrameBlob() {
+        if (!stream) {
+          throw new Error("Camera chưa bật");
+        }
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        return await new Promise((resolve) =>
+          canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.9)
+        );
+      }
+
+      async function identify() {
+        try {
+          const blob = await captureFrameBlob();
+          if (transportSelect.value === "websocket") {
+            await ensureWebSocket();
+            const base64 = await blobToBase64(blob);
+            const payload = {
+              action: "identify",
+              image_base64: base64,
+              threshold: parseFloat(thresholdInput.value),
+            };
+            const token = tokenInput.value.trim();
+            if (token) {
+              payload.token = token;
+            }
+            ws.send(JSON.stringify(payload));
+            wsPendingStart = performance.now();
+            statusLabel.textContent = "Đã gửi frame qua WebSocket…";
+          } else {
+            await sendRestIdentify(blob);
+          }
+        } catch (err) {
+          resultsEl.textContent = `Error: ${err.message}`;
+          statusLabel.textContent = "Gửi yêu cầu thất bại.";
+          await sendTelemetry({
+            status: "error",
+            error_message: err.message,
+            transport: transportSelect.value,
+          });
+        }
+      }
+
+      async function sendRestIdentify(blob) {
+        const form = new FormData();
+        form.append("image", blob, "frame.jpg");
+        form.append("threshold", thresholdInput.value);
+
+        const endpoint = buildIdentifyEndpoint(apiInput.value.trim());
+        statusLabel.textContent = "Đang gửi lên API...";
+        const start = performance.now();
+        const headers = {};
+        const apiKey = apiKeyInput.value.trim();
+        const apiKeyHeader = apiKeyHeaderInput.value.trim() || "x-api-key";
+        const token = tokenInput.value.trim();
+        if (apiKey) {
+          headers[apiKeyHeader] = apiKey;
+        }
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+        const response = await fetch(endpoint, { method: "POST", body: form, headers });
+        const latency = performance.now() - start;
+
+        if (!response.ok) {
+          const text = await response.text();
+          await sendTelemetry({
+            status: "error",
+            error_message: `${response.status} ${text}`,
+            transport: "rest",
+          });
+          throw new Error(`${response.status} ${text}`);
+        }
+
+        const json = await response.json();
+        resultsEl.textContent = JSON.stringify(json, null, 2);
+        statusLabel.textContent = `Thành công (${latency.toFixed(0)}ms)`;
+        const faces =
+          (json.faces && json.faces.length) ||
+          (json.matches && json.matches.length) ||
+          0;
+        await sendTelemetry({
+          status: "success",
+          latency_ms: latency,
+          faces_detected: faces,
+          transport: "rest",
+        });
+      }
+
+      function buildIdentifyEndpoint(base) {
+        if (!base) {
+          return "/api/v1/identify";
+        }
+        let normalized = base.replace(/\/$/, "");
+        if (normalized.endsWith("/identify")) {
+          return normalized;
+        }
+        if (normalized.endsWith("/api/v1")) {
+          return `${normalized}/identify`;
+        }
+        if (normalized.includes("/api/v1/identify")) {
+          return normalized;
+        }
+        return `${normalized}/api/v1/identify`;
+      }
+
+      function buildTelemetryEndpoint(base) {
+        if (!base) {
+          return "/api/v1/telemetry";
+        }
+        let normalized = base.replace(/\/$/, "");
+        if (normalized.endsWith("/telemetry")) {
+          return normalized;
+        }
+        if (normalized.endsWith("/api/v1")) {
+          return `${normalized}/telemetry`;
+        }
+        if (normalized.includes("/api/v1/telemetry")) {
+          return normalized;
+        }
+        return `${normalized}/api/v1/telemetry`;
+      }
+
+      function deriveWsUrl() {
+        const explicit = wsUrlInput.value.trim();
+        if (explicit) return appendToken(explicit);
+        let api = apiInput.value.trim();
+        if (api.endsWith("/api/v1")) {
+          api = api.slice(0, -"/api/v1".length);
+        }
+        if (!api) {
+          return appendToken("ws://localhost:8000");
+        }
+        if (api.startsWith("https://")) {
+          return appendToken("wss://" + api.slice("https://".length));
+        }
+        if (api.startsWith("http://")) {
+          return appendToken("ws://" + api.slice("http://".length));
+        }
+        if (!api.startsWith("ws://") && !api.startsWith("wss://")) {
+          return appendToken("wss://" + api);
+        }
+        return appendToken(api);
+      }
+
+      function appendToken(url) {
+        const token = tokenInput.value.trim();
+        if (!token) return url;
+        return url.includes("?") ? `${url}&token=${token}` : `${url}?token=${token}`;
+      }
+
+      function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result;
+            if (typeof result === "string") {
+              resolve(result.split(",")[1]);
+            } else {
+              reject(new Error("Failed to encode blob"));
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      function ensureWebSocket() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+          try {
+            const url = new URL(deriveWsUrl());
+            const apiKey = apiKeyInput.value.trim();
+            const token = tokenInput.value.trim();
+            if (apiKey) {
+              url.searchParams.set("api_key", apiKey);
+            }
+            if (token) {
+              url.searchParams.set("token", token);
+            }
+            ws = new WebSocket(url.toString());
+            ws.onopen = () => {
+              statusLabel.textContent = "WebSocket connected.";
+              resolve();
+            };
+            ws.onerror = (evt) => {
+              reject(evt);
+            };
+            ws.onmessage = (evt) => {
+              try {
+                const data = JSON.parse(evt.data);
+                resultsEl.textContent = JSON.stringify(data, null, 2);
+                const latency = wsPendingStart ? performance.now() - wsPendingStart : null;
+                wsPendingStart = null;
+                const faces =
+                  (data.faces && data.faces.length) ||
+                  (data.matches && data.matches.length) ||
+                  0;
+                sendTelemetry({
+                  status: "success",
+                  latency_ms: latency,
+                  faces_detected: faces,
+                  transport: "websocket",
+                });
+              } catch (err) {
+                resultsEl.textContent = evt.data;
+                sendTelemetry({
+                  status: "error",
+                  error_message: err.message,
+                  transport: "websocket",
+                });
+              }
+            };
+            ws.onclose = () => {
+              statusLabel.textContent = "WebSocket disconnected.";
+              wsPendingStart = null;
+            };
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      function disconnectWebSocket() {
+        if (ws) {
+          ws.close();
+          ws = null;
+          statusLabel.textContent = "WebSocket disconnected.";
+        }
+      }
+
+      async function sendTelemetry(payload) {
+        if (!telemetryCheckbox.checked) return;
+        try {
+          const endpoint = buildTelemetryEndpoint(apiInput.value.trim());
+          const apiKey = apiKeyInput.value.trim();
+          const apiKeyHeader = apiKeyHeaderInput.value.trim() || "x-api-key";
+          const token = tokenInput.value.trim();
+          const headers = {
+            "Content-Type": "application/json",
+          };
+          if (apiKey) {
+            headers[apiKeyHeader] = apiKey;
+          }
+          if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+          }
+          await fetch(endpoint, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              client_id: clientIdInput.value.trim() || undefined,
+              timestamp: new Date().toISOString(),
+              transport: transportSelect.value,
+              ...payload,
+            }),
+          });
+        } catch (err) {
+          console.warn("Telemetry failed", err);
+        }
+      }
+
+      document.getElementById("start-camera").addEventListener("click", startCamera);
+      document.getElementById("stop-camera").addEventListener("click", stopCamera);
+      document.getElementById("identify").addEventListener("click", identify);
+      document.getElementById("connect-ws").addEventListener("click", () =>
+        ensureWebSocket().catch((err) => {
+          statusLabel.textContent = `Kết nối WS thất bại: ${err.message || err}`;
+        })
+      );
+      document.getElementById("disconnect-ws").addEventListener("click", disconnectWebSocket);
+      modeSelect.addEventListener("change", () => {
+          if (stream && modeSelect.value === "auto") {
+            scheduleAutoCapture();
+          } else {
+            clearTimeout(autoTimer);
+          }
+        });
+      transportSelect.addEventListener("change", () => {
+        if (transportSelect.value !== "websocket") {
+          disconnectWebSocket();
+        }
+      });
+    </script>
+  </body>
+</html>

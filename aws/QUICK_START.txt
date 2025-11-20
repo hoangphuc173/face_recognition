@@ -1,0 +1,127 @@
+=============================================================================
+            FACE RECOGNITION SYSTEM - QUICK START GUIDE
+=============================================================================
+
+BƯỚC 1: TẠO AWS RESOURCES
+--------------------------
+
+1.1. Tạo S3 Bucket:
+   $bucketName = "face-recognition-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+   aws s3 mb s3://$bucketName --region ap-southeast-1
+   Write-Host "Bucket: $bucketName"
+
+1.2. Tạo Rekognition Collection:
+   aws rekognition create-collection --collection-id face-recognition-collection-dev --region ap-southeast-1
+
+1.3. Tạo DynamoDB Tables:
+   cd C:\Users\ADMIN\Downloads\facerecog\aws
+   python create_database.py
+
+
+BƯỚC 2: CẤU HÌNH .ENV
+----------------------
+
+Mở file: C:\Users\ADMIN\Downloads\facerecog\aws\.env
+
+Cập nhật:
+   AWS_S3_BUCKET=<tên bucket từ bước 1.1>
+   AWS_REKOGNITION_COLLECTION=face-recognition-collection-dev
+
+
+BƯỚC 3: CHẠY HỆ THỐNG
+----------------------
+
+Terminal 1 - API Server:
+   cd C:\Users\ADMIN\Downloads\facerecog\aws
+   python -m uvicorn backend.api.app:app --reload --host 127.0.0.1 --port 8888
+
+Terminal 2 - GUI:
+   cd C:\Users\ADMIN\Downloads\facerecog
+   python app/gui_app.py
+
+
+BƯỚC 4: SỬ DỤNG
+----------------
+
+Enrollment (Đăng ký):
+   1. Start Camera
+   2. Nhập thông tin
+   3. Capture Face
+   4. Register from Captured Photo
+
+Identification (Nhận diện):
+   1. Start Camera
+   2. Identify Now
+
+
+=============================================================================
+                           LỆNH HỮU ÍCH
+=============================================================================
+
+KIỂM TRA HEALTH:
+   curl http://127.0.0.1:8888/health
+   Start-Process "http://127.0.0.1:8888/docs"
+
+XEM DATABASE:
+   aws dynamodb scan --table-name face-recognition-people-dev --region ap-southeast-1
+   aws s3 ls s3://<bucket-name>/enrollments/
+   aws rekognition list-faces --collection-id face-recognition-collection-dev --region ap-southeast-1
+
+RESET DATABASE:
+   cd C:\Users\ADMIN\Downloads\facerecog\aws
+   python reset_database.py
+
+KILL PORT 8888:
+   $proc = Get-NetTCPConnection -LocalPort 8888 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique
+   if ($proc) { Stop-Process -Id $proc -Force }
+
+KIỂM TRA AWS CONFIG:
+   aws configure list
+   aws sts get-caller-identity
+
+
+=============================================================================
+                          XỬ LÝ LỖI
+=============================================================================
+
+"AWS services not configured":
+   → Restart server để load .env mới
+
+"Bucket does not exist":
+   → aws s3 mb s3://<bucket-name> --region ap-southeast-1
+
+"Collection does not exist":
+   → aws rekognition create-collection --collection-id face-recognition-collection-dev --region ap-southeast-1
+
+"Table does not exist":
+   → python create_database.py
+
+"Port already in use":
+   → Kill process: Stop-Process -Id $proc -Force
+
+
+=============================================================================
+                        API ENDPOINTS
+=============================================================================
+
+POST /api/v1/enroll          - Đăng ký người dùng mới
+POST /api/v1/identify        - Nhận diện khuôn mặt
+GET  /api/v1/people          - Danh sách người dùng
+GET  /api/v1/people/{id}     - Chi tiết người dùng
+DELETE /api/v1/people/{id}   - Xóa người dùng
+GET  /health                 - Health check
+
+
+=============================================================================
+                           SCRIPTS
+=============================================================================
+
+create_database.py   - Tạo tất cả AWS resources
+reset_database.py    - Xóa và làm sạch database
+setup-aws.ps1        - Setup tự động (nếu có)
+
+
+=============================================================================
+Xem chi tiết: SETUP_GUIDE.md
+Docs: docs/
+=============================================================================

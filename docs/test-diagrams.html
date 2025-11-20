@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition - Diagrams Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .diagram-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Face Recognition System - Diagrams Test</h1>
+    
+    <div class="status success">
+        <strong>✅ Testing Mermaid Diagrams</strong><br>
+        If diagrams appear below, they are working correctly!
+    </div>
+
+    <!-- Sequence Diagram Test -->
+    <div class="diagram-container">
+        <h2>📊 Test 1: Enrollment Sequence Diagram</h2>
+        <div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant API as API Gateway
+    participant Lambda as EnrollFunction
+    participant Rek as Rekognition
+    participant DDB as DynamoDB
+
+    Client->>API: POST /enroll
+    API->>Lambda: Invoke
+    Lambda->>Rek: IndexFaces
+    Rek-->>Lambda: face_id
+    Lambda->>DDB: Store
+    DDB-->>Lambda: Success
+    Lambda-->>Client: Response
+        </div>
+    </div>
+
+    <!-- ERD Test -->
+    <div class="diagram-container">
+        <h2>🗄️ Test 2: Entity Relationship Diagram</h2>
+        <div class="mermaid">
+erDiagram
+    USERS ||--o{ EMBEDDINGS : "has"
+    USERS ||--o{ ACCESS_LOGS : "generates"
+    
+    USERS {
+        string person_id PK
+        string user_name
+        string full_name
+    }
+    
+    EMBEDDINGS {
+        string person_id PK
+        string face_id SK
+        float confidence
+    }
+    
+    ACCESS_LOGS {
+        string log_id PK
+        string person_id FK
+        datetime timestamp
+    }
+        </div>
+    </div>
+
+    <!-- Data Flow Test -->
+    <div class="diagram-container">
+        <h2>🔄 Test 3: Data Flow Diagram</h2>
+        <div class="mermaid">
+graph LR
+    Client[Client] --> API[API Gateway]
+    API --> Lambda[Lambda Function]
+    Lambda --> Rek[Rekognition]
+    Lambda --> DDB[DynamoDB]
+    Lambda --> S3[S3 Bucket]
+    
+    style Client fill:#E1D5E7
+    style API fill:#FFF2CC
+    style Lambda fill:#FFE6CC
+    style Rek fill:#E8F5E9
+    style DDB fill:#E3F2FD
+    style S3 fill:#D5E8D4
+        </div>
+    </div>
+
+    <!-- Use Case Test -->
+    <div class="diagram-container">
+        <h2>🎭 Test 4: Use Case Diagram</h2>
+        <div class="mermaid">
+graph TB
+    subgraph System["Face Recognition System"]
+        UC1[Register Person]
+        UC2[Identify Person]
+        UC3[View Statistics]
+    end
+    
+    User[👤 End User]
+    Admin[👨‍💼 Administrator]
+    
+    User --> UC1
+    User --> UC2
+    Admin --> UC3
+    
+    classDef actorClass fill:#E1D5E7,stroke:#9673A6,stroke-width:3px
+    classDef ucClass fill:#E8F5E9,stroke:#277116,stroke-width:2px
+    
+    class User,Admin actorClass
+    class UC1,UC2,UC3 ucClass
+        </div>
+    </div>
+
+    <!-- Complex Flow Test -->
+    <div class="diagram-container">
+        <h2>⚡ Test 5: Identification Flow (Complex)</h2>
+        <div class="mermaid">
+flowchart TD
+    Start([User Captures Photo]) --> Input{Valid Input?}
+    Input -->|Yes| B64[Base64 Encode]
+    Input -->|No| Error1[Error: Invalid]
+    
+    B64 --> API[API Gateway]
+    API --> Lambda[IdentifyFunction]
+    
+    Lambda --> Search[Search Faces]
+    Search --> Match{Match Found?}
+    
+    Match -->|No| NoMatch[No Match]
+    Match -->|Yes| Check{Confidence OK?}
+    
+    Check -->|No| LowConf[Low Confidence]
+    Check -->|Yes| Success[Success]
+    
+    Success --> End([Return Result])
+    NoMatch --> End
+    LowConf --> End
+    Error1 --> End
+    
+    style Start fill:#E1D5E7
+    style End fill:#D5E8D4
+    style Success fill:#D5E8D4
+    style Error1 fill:#F8CECC
+    style NoMatch fill:#FFF9E6
+    style LowConf fill:#FFF9E6
+        </div>
+    </div>
+
+    <div class="status success">
+        <strong>✅ Diagram Test Complete</strong><br>
+        All 5 diagram types tested. Check if they render correctly above.
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+        
+        // Log success
+        console.log('✅ Mermaid initialized');
+        
+        // Check for errors
+        window.addEventListener('error', function(e) {
+            console.error('❌ Error:', e.message);
+        });
+    </script>
+</body>
+</html>

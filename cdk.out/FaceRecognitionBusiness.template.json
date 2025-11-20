@@ -1,0 +1,734 @@
+{
+ "Resources": {
+  "BusinessLambdaRole1E429EEF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/BusinessLambdaRole/Resource"
+   }
+  },
+  "BusinessLambdaRoleDefaultPolicyE7B585C7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:DeleteItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:dynamodb:ap-southeast-1:758934444761:table/face-recognition-users-prod-773600",
+        "arn:aws:dynamodb:ap-southeast-1:758934444761:table/face-recognition-embeddings-prod-773600",
+        "arn:aws:dynamodb:ap-southeast-1:758934444761:table/face-recognition-access-logs-prod-773600",
+        "arn:aws:dynamodb:ap-southeast-1:758934444761:table/face-recognition-users-prod-773600/index/*"
+       ]
+      },
+      {
+       "Action": [
+        "rekognition:IndexFaces",
+        "rekognition:SearchFacesByImage",
+        "rekognition:DetectFaces",
+        "rekognition:CreateCollection",
+        "rekognition:ListCollections",
+        "rekognition:DescribeCollection",
+        "rekognition:DeleteFaces"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::face-recognition-images-829717935400",
+        "arn:aws:s3:::face-recognition-images-829717935400/*"
+       ]
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ssm:ap-southeast-1:758934444761:parameter/face-recognition/*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BusinessLambdaRoleDefaultPolicyE7B585C7",
+    "Roles": [
+     {
+      "Ref": "BusinessLambdaRole1E429EEF"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/BusinessLambdaRole/DefaultPolicy/Resource"
+   }
+  },
+  "EnrollFunctionD4C37084": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+     "S3Key": "6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd.zip"
+    },
+    "Description": "Face enrollment handler with Rekognition",
+    "Environment": {
+     "Variables": {
+      "S3_BUCKET_NAME": "face-recognition-images-829717935400",
+      "REKOGNITION_COLLECTION_ID": "face-recognition-collection",
+      "DYNAMODB_PEOPLE_TABLE": "face-recognition-users-prod-773600",
+      "DYNAMODB_EMBEDDINGS_TABLE": "face-recognition-embeddings-prod-773600",
+      "DYNAMODB_ACCESS_LOGS_TABLE": "face-recognition-access-logs-prod-773600",
+      "USER_POOL_ID": "ap-southeast-1_qQKOiB3OZ",
+      "PYTHONPATH": "/var/task:/var/runtime"
+     }
+    },
+    "Handler": "lambda_handlers/enroll.lambda_handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "BusinessLambdaRole1E429EEF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "BusinessLambdaRoleDefaultPolicyE7B585C7",
+    "BusinessLambdaRole1E429EEF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/EnrollFunction/Resource",
+    "aws:asset:path": "asset.6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "EnrollFunctionLogRetention306E5A14": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "EnrollFunctionD4C37084"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/EnrollFunction/LogRetention/Resource"
+   }
+  },
+  "EnrollFunctionInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU83DC8D23": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EnrollFunctionD4C37084",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/EnrollFunction/InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU="
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs22.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+     "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "IdentifyFunction125F034A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-758934444761-ap-southeast-1",
+     "S3Key": "6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd.zip"
+    },
+    "Description": "Face identification handler with Rekognition",
+    "Environment": {
+     "Variables": {
+      "S3_BUCKET_NAME": "face-recognition-images-829717935400",
+      "REKOGNITION_COLLECTION_ID": "face-recognition-collection",
+      "DYNAMODB_PEOPLE_TABLE": "face-recognition-users-prod-773600",
+      "DYNAMODB_EMBEDDINGS_TABLE": "face-recognition-embeddings-prod-773600",
+      "DYNAMODB_ACCESS_LOGS_TABLE": "face-recognition-access-logs-prod-773600",
+      "USER_POOL_ID": "ap-southeast-1_qQKOiB3OZ",
+      "PYTHONPATH": "/var/task:/var/runtime"
+     }
+    },
+    "Handler": "lambda_handlers/identify.lambda_handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "BusinessLambdaRole1E429EEF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "BusinessLambdaRoleDefaultPolicyE7B585C7",
+    "BusinessLambdaRole1E429EEF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/IdentifyFunction/Resource",
+    "aws:asset:path": "asset.6fa5a873141a7cd619b5e21fa7ebe808f914a8e43e85f3030eb4b76aa9aa46bd",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "IdentifyFunctionLogRetentionD7F7222E": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IdentifyFunction125F034A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/IdentifyFunction/LogRetention/Resource"
+   }
+  },
+  "IdentifyFunctionInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU5993B3F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IdentifyFunction125F034A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/IdentifyFunction/InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU="
+   }
+  },
+  "ImportedApienrollB8E36FC7": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": "h84wlp3ho5",
+    "PathPart": "enroll",
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/enroll/Resource"
+   }
+  },
+  "ImportedApienrollPOSTApiPermissionFaceRecognitionBusinessImportedApi8EB284EAPOSTenroll12D3F81C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EnrollFunctionD4C37084",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:ap-southeast-1:758934444761:r7hwlthie5/*/POST/enroll"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/enroll/POST/ApiPermission.FaceRecognitionBusinessImportedApi8EB284EA.POST..enroll"
+   }
+  },
+  "ImportedApienrollPOSTApiPermissionTestFaceRecognitionBusinessImportedApi8EB284EAPOSTenroll8223EEE5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EnrollFunctionD4C37084",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:ap-southeast-1:758934444761:r7hwlthie5/test-invoke-stage/POST/enroll"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/enroll/POST/ApiPermission.Test.FaceRecognitionBusinessImportedApi8EB284EA.POST..enroll"
+   }
+  },
+  "ImportedApienrollPOSTEFEE6B5B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "EnrollFunctionD4C37084",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ImportedApienrollB8E36FC7"
+    },
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/enroll/POST/Resource"
+   }
+  },
+  "ImportedApienrollOPTIONSD1EAC8C9": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{\"statusCode\": 200}"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Allow-Origin": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ImportedApienrollB8E36FC7"
+    },
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/enroll/OPTIONS/Resource"
+   }
+  },
+  "ImportedApiidentifyD2F641F4": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": "h84wlp3ho5",
+    "PathPart": "identify",
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/identify/Resource"
+   }
+  },
+  "ImportedApiidentifyPOSTApiPermissionFaceRecognitionBusinessImportedApi8EB284EAPOSTidentifyD1CE6E8B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IdentifyFunction125F034A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:ap-southeast-1:758934444761:r7hwlthie5/*/POST/identify"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/identify/POST/ApiPermission.FaceRecognitionBusinessImportedApi8EB284EA.POST..identify"
+   }
+  },
+  "ImportedApiidentifyPOSTApiPermissionTestFaceRecognitionBusinessImportedApi8EB284EAPOSTidentify105D719B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IdentifyFunction125F034A",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:ap-southeast-1:758934444761:r7hwlthie5/test-invoke-stage/POST/identify"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/identify/POST/ApiPermission.Test.FaceRecognitionBusinessImportedApi8EB284EA.POST..identify"
+   }
+  },
+  "ImportedApiidentifyPOSTB4F4351C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "IdentifyFunction125F034A",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ImportedApiidentifyD2F641F4"
+    },
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/identify/POST/Resource"
+   }
+  },
+  "ImportedApiidentifyOPTIONSB9E69EB0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{\"statusCode\": 200}"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Allow-Origin": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "ImportedApiidentifyD2F641F4"
+    },
+    "RestApiId": "r7hwlthie5"
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/ImportedApi/Default/identify/OPTIONS/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOUW7CQAxEz8L/xo2WXgCQ+tWqKBwAmY3ZmiS7UewlQtHeHSVR1fI1b+wZ2RasfYdyg6MUrm6Kli8wnRRdY3CU88TYwVTFlszhGhY9xpbdY7YrZdNid6kRpo8UnHIM8+4/H2noWIRjyEa2ZxQhFdjNYmQL++Qa0j0KmTZ6gc/oK1IKSx179qg04gOmikR3PS/JiiSmwdGLWX785S/Sn1jPo5Vy/sstt0+KnoN/KR2u4TtpnzSbEGuCm7zdrQVbQrm5CXMxpKDcEVSrPgFfeZ81PwEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "FaceRecognitionBusiness/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "EnrollEndpoint": {
+   "Description": "Enroll API Endpoint",
+   "Value": "https://r7hwlthie5.execute-api.ap-southeast-1.amazonaws.com/prod/enroll"
+  },
+  "IdentifyEndpoint": {
+   "Description": "Identify API Endpoint",
+   "Value": "https://r7hwlthie5.execute-api.ap-southeast-1.amazonaws.com/prod/identify"
+  },
+  "EnrollFunctionName": {
+   "Description": "Enroll Lambda Function Name",
+   "Value": {
+    "Ref": "EnrollFunctionD4C37084"
+   }
+  },
+  "IdentifyFunctionName": {
+   "Description": "Identify Lambda Function Name",
+   "Value": {
+    "Ref": "IdentifyFunction125F034A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
