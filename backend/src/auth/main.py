@@ -29,12 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-cognito = boto3.client("cognito-idp", region_name=os.environ.get("AWS_REGION_VAL", "us-east-1"))
+cognito = boto3.client("cognito-idp", region_name=os.environ.get("AWS_REGION", "us-east-1"))
 profile_manager = get_profile_manager()
 
 # Environment variables
-USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID")
-CLIENT_ID = os.environ.get("COGNITO_CLIENT_ID")
+USER_POOL_ID = os.environ.get("USER_POOL_ID")
+CLIENT_ID = os.environ.get("CLIENT_ID")
 
 
 # ============================================================================
@@ -242,6 +242,7 @@ def register(data: RegisterRequest):
     """
     Register new user using Cognito's built-in sign_up
     Cognito will send verification code to email automatically
+    New users are automatically added to Guest group after confirmation
     """
     try:
         # Sign up with Cognito (Cognito sends verification email automatically)
@@ -281,6 +282,7 @@ def register(data: RegisterRequest):
             raise HTTPException(status_code=400, detail=str(e))
 
 
+
 @app.post("/auth/confirm-registration")
 def confirm_registration(username: str = Body(...), code: str = Body(...)):
     """Confirm registration with verification code from email"""
@@ -290,6 +292,17 @@ def confirm_registration(username: str = Body(...), code: str = Body(...)):
             Username=username,
             ConfirmationCode=code
         )
+        
+        # Add user to Guest group by default
+        try:
+            cognito.admin_add_user_to_group(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                GroupName='Guest'
+            )
+        except Exception as e:
+            print(f"Warning: Could not add user to Guest group: {e}")
+        
         return {"success": True, "message": "Email verified successfully. You can now login."}
     except ClientError as e:
         error_code = e.response['Error']['Code']

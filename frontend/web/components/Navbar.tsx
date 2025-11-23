@@ -1,8 +1,7 @@
-'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { LogOut, User, Menu, X, Home, Camera, Users, FileText } from 'lucide-react';
+import { LogOut, User, Menu, X, Home, Camera, Users, FileText, UserPlus } from 'lucide-react';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -23,12 +22,21 @@ export default function Navbar() {
         router.push('/');
     };
 
-    const navItems = [
-        { href: '/dashboard', label: 'Dashboard', icon: Home },
-        { href: '/identify', label: 'Identify', icon: Camera },
-        { href: '/people', label: 'People', icon: Users },
-        { href: '/access-logs', label: 'Logs', icon: FileText },
+    const allNavItems = [
+        { href: '/dashboard', label: 'Dashboard', icon: Home, adminOnly: false },
+        { href: '/identify', label: 'Identify', icon: Camera, adminOnly: false },
+        { href: '/enroll', label: 'Enroll', icon: UserPlus, adminOnly: false },
+        { href: '/people', label: 'People', icon: Users, adminOnly: true },
+        { href: '/access-logs', label: 'Logs', icon: FileText, adminOnly: false },
     ];
+
+    // Filter nav items based on user role
+    const navItems = allNavItems.filter(item => {
+        if (item.adminOnly) {
+            return user?.role === 'Admin';
+        }
+        return true;
+    });
 
     return (
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-40">
@@ -54,8 +62,8 @@ export default function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${isActive
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50'
+                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                         }`}
                                 >
                                     <Icon size={18} />
@@ -107,8 +115,8 @@ export default function Navbar() {
                                         href={item.href}
                                         onClick={() => setIsMenuOpen(false)}
                                         className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${isActive
-                                                ? 'bg-blue-600 text-white'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                             }`}
                                     >
                                         <Icon size={18} />
