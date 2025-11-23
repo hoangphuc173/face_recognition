@@ -1,8 +1,12 @@
 {
-  "FaceRecognitionStack": {
-    "UserPoolClientId": "ihqnm7pml2nes3047e2rct2qf",
-    "ApiUrl": "https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/",
-    "UserPoolId": "ap-southeast-1_uPp7yneSO",
-    "FaceRecogApiEndpoint284F5164": "https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/"
+  "FaceRecogAmplifyStack": {
+    "AmplifyAppUrl": "https://prod.d3d0ohwbet4zvk.amplifyapp.com",
+    "AmplifyAppId": "d3d0ohwbet4zvk"
+  },
+  "FaceRecogBackendStack": {
+    "UserPoolClientId": "q0h65br0civell71vb79s7sar",
+    "ApiUrl": "https://r7sbtez24j.execute-api.ap-southeast-1.amazonaws.com/prod/",
+    "UserPoolId": "ap-southeast-1_JvAwosOaX",
+    "FaceRecogApiEndpoint284F5164": "https://r7sbtez24j.execute-api.ap-southeast-1.amazonaws.com/prod/"
   }
 }

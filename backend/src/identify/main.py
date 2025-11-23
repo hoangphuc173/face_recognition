@@ -1,12 +1,31 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import boto3
 import time
 import uuid
-from ..shared.config import settings
-from ..shared.image_utils import preprocess_image, validate_image
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from shared.config import settings
+from shared.image_utils import preprocess_image, validate_image
 
 app = FastAPI()
+
+# CORS configuration
+origins = [
+    "http://localhost:3000",
+    "https://master.d3d0ohwbet4zvk.amplifyapp.com",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 rekognition = boto3.client("rekognition", region_name=settings.AWS_REGION)
 dynamodb = boto3.resource("dynamodb", region_name=settings.AWS_REGION)
@@ -15,7 +34,11 @@ dynamodb = boto3.resource("dynamodb", region_name=settings.AWS_REGION)
 async def identify_face(file: UploadFile = File(...)):
     contents = await file.read()
     
-    if not validate_image(contents):
+    try:
+        validate_image(contents)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid image: {str(e)}")
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid image file")
         
     processed_image = preprocess_image(contents)
@@ -43,14 +66,6 @@ async def identify_face(file: UploadFile = File(...)):
         confidence = match['Similarity']
         
         # Get User Info from DynamoDB
-        # This is inefficient (N queries). Better to use BatchGetItem or cache.
-        # For MVP, query is fine. Index on FaceId would be better.
-        # Assuming FaceId is not the primary key (UserId is).
-        # We need a GSI on FaceId in DynamoDB.
-        
-        # Scan is bad, but if we don't have GSI...
-        # Let's assume we will create a GSI 'FaceIdIndex'
-        
         user_info = None
         try:
             # Query using GSI
@@ -87,12 +102,5 @@ async def identify_face(file: UploadFile = File(...)):
 
 def handler(event, context):
     result = Mangum(app)(event, context)
-    if isinstance(result, dict):
-        if 'headers' not in result:
-            result['headers'] = {}
-        result['headers'].update({
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
-        })
+    # CORS handled by middleware
     return result

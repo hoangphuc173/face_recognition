@@ -12,8 +12,8 @@ from botocore.exceptions import ClientError
 
 class UserProfileManager:
     def __init__(self):
-        self.dynamodb = boto3.resource('dynamodb', region_name=os.environ.get('AWS_REGION_VAL', 'us-east-1'))
-        self.table_name = os.environ.get('DYNAMODB_TABLE_USER_PROFILES', 'UserProfiles')
+        self.dynamodb = boto3.resource('dynamodb', region_name=os.environ.get('AWS_REGION', 'ap-southeast-1'))
+        self.table_name = os.environ.get('USER_PROFILES_TABLE', 'UserProfiles')
         self.table = self.dynamodb.Table(self.table_name)
     
     def create_profile(self, user_id: str, profile_data: Dict[str, Any]) -> Dict[str, Any]:

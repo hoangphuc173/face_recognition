@@ -1,12 +1,31 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import boto3
 import uuid
 import time
-from ..shared.config import settings
-from ..shared.image_utils import preprocess_image, validate_image
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from shared.config import settings
+from shared.image_utils import preprocess_image, validate_image
 
 app = FastAPI()
+
+# CORS configuration
+origins = [
+    "http://localhost:3000",
+    "https://master.d3d0ohwbet4zvk.amplifyapp.com",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 s3 = boto3.client("s3", region_name=settings.AWS_REGION)
 dynamodb = boto3.resource("dynamodb", region_name=settings.AWS_REGION)
@@ -18,9 +37,18 @@ async def enroll_user(
     name: str = Form(...),
     user_id: str = Form(None) # Optional, generate if not provided
 ):
+    print(f"Enroll request - name: {name}, user_id: {user_id}, file: {file.filename}, content_type: {file.content_type}")
     contents = await file.read()
+    print(f"File size: {len(contents)} bytes")
+    print(f"First 20 bytes: {contents[:20].hex()}")
     
-    if not validate_image(contents):
+    try:
+        validate_image(contents)
+    except ValueError as e:
+        print(f"Invalid image validation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid image: {str(e)}")
+    except Exception as e:
+        print(f"Unexpected validation error: {e}")
         raise HTTPException(status_code=400, detail="Invalid image file")
         
     processed_image = preprocess_image(contents)
@@ -68,12 +96,5 @@ async def enroll_user(
 
 def handler(event, context):
     result = Mangum(app)(event, context)
-    if isinstance(result, dict):
-        if 'headers' not in result:
-            result['headers'] = {}
-        result['headers'].update({
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
-        })
+    # CORS handled by middleware
     return result

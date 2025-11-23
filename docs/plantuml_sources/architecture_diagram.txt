@@ -1,0 +1,76 @@
+@startuml
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/General/User.puml
+!include AWSPuml/Mobile/APIGateway.puml
+!include AWSPuml/Compute/Lambda.puml
+!include AWSPuml/Database/DynamoDB.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+!include AWSPuml/MachineLearning/Rekognition.puml
+!include AWSPuml/SecurityIdentityCompliance/Cognito.puml
+!include AWSPuml/SecurityIdentityCompliance/KeyManagementService.puml
+
+title Face Recognition System Architecture
+
+left to right direction
+
+actor "User" as user
+actor "Admin" as admin
+
+package "AWS Cloud" {
+    package "Public Zone" {
+        APIGateway(api, "API Gateway", "REST API")
+        Cognito(cognito, "Cognito User Pool", "Auth & Users")
+    }
+
+    package "Compute Layer (Serverless)" {
+        Lambda(authFn, "Auth Handler", "User Mgmt")
+        Lambda(enrollFn, "Enroll Handler", "Face Indexing")
+        Lambda(identifyFn, "Identify Handler", "Face Search")
+        Lambda(peopleFn, "People Handler", "Profile Mgmt")
+        Lambda(loggingFn, "Logging Handler", "Access Logs")
+    }
+
+    package "Storage & Data Layer" {
+        SimpleStorageService(rawBucket, "Raw Bucket", "Images")
+        SimpleStorageService(processedBucket, "Processed Bucket", "Thumbnails")
+        
+        DynamoDB(usersTable, "Users Table", "Metadata")
+        DynamoDB(logsTable, "Access Logs", "History")
+        DynamoDB(profilesTable, "User Profiles", "Details")
+        
+        Rekognition(rekognition, "Rekognition", "Face Collection")
+    }
+    
+    package "Security" {
+        KeyManagementService(kms, "KMS", "Encryption Keys")
+    }
+}
+
+user --> api : HTTPS
+admin --> api : HTTPS
+
+api --> authFn : /auth
+api --> enrollFn : /enroll
+api --> identifyFn : /identify
+api --> peopleFn : /people
+api --> loggingFn : /logs
+
+authFn --> cognito : Auth/User Mgmt
+authFn --> profilesTable : Read/Write
+
+enrollFn --> rawBucket : Upload Image
+enrollFn --> rekognition : IndexFaces
+enrollFn --> usersTable : Save Metadata
+enrollFn --> kms : Decrypt
+
+identifyFn --> rekognition : SearchFacesByImage
+identifyFn --> usersTable : Lookup User
+identifyFn --> logsTable : Record Log
+
+peopleFn --> usersTable : Update/Delete
+peopleFn --> rekognition : DeleteFaces
+
+loggingFn --> logsTable : Read Logs
+
+@enduml

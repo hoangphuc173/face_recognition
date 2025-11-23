@@ -1,0 +1,39 @@
+@startuml
+actor User as U
+participant "API Gateway" as API
+participant "Identify Lambda" as L
+participant "Rekognition" as R
+participant "DynamoDB" as DB
+participant "Logs DB" as LDB
+
+U -> API: POST /identify (Image)
+activate API
+API -> L: Invoke Lambda
+activate L
+
+L -> R: SearchFacesByImage(Image)
+activate R
+R --> L: Face Matches (FaceId, Confidence)
+deactivate R
+
+alt Face Found
+    L -> DB: GetItem(FaceId)
+    activate DB
+    DB --> L: User Details
+    deactivate DB
+    
+    L -> LDB: PutItem(Log Entry)
+    activate LDB
+    LDB --> L: Success
+    deactivate LDB
+    
+    L --> API: 200 OK (User Info)
+    API --> U: Display User Info
+else No Face Found
+    L --> API: 404 Not Found
+    API --> U: "Unknown Person"
+end
+
+deactivate L
+deactivate API
+@enduml

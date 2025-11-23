@@ -1,0 +1,42 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity "USERS" as users {
+  *UserId : string <<PK>>
+  --
+  FaceId : string <<FK>>
+  FullName : string
+  Email : string
+  CreatedAt : string
+}
+
+entity "USER_PROFILES" as profiles {
+  *UserId : string <<PK>>
+  --
+  Address : string
+  PhoneNumber : string
+  Department : string
+  Role : string
+}
+
+entity "ACCESS_LOGS" as logs {
+  *LogId : string <<PK>>
+  --
+  UserId : string <<FK>>
+  Timestamp : string
+  Confidence : float
+  Action : string
+}
+
+entity "OTP_VERIFICATION" as otp {
+  *Email : string <<PK>>
+  --
+  OTP : string
+  TTL : int
+}
+
+users ||..|| profiles : "has details"
+users ||..o{ logs : "generates"
+users ||..o{ otp : "verifies"
+@enduml

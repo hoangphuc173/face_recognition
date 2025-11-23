@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { MainStack } from '../lib/main-stack';
-import { FrontendS3Stack } from '../lib/frontend-s3-stack';
+import { AmplifyStack } from '../lib/amplify-stack';
 
 const app = new cdk.App();
 
@@ -15,13 +15,13 @@ const backendStack = new MainStack(app, 'FaceRecogBackendStack', {
     description: 'Face Recognition Backend - Lambda + API Gateway + Cognito',
 });
 
-// Frontend Stack (S3 only - no CloudFront)
-const frontendStack = new FrontendS3Stack(app, 'FaceRecogFrontendStack', {
+// Frontend Stack (Amplify)
+const frontendStack = new AmplifyStack(app, 'FaceRecogAmplifyStack', {
     env: {
         account: process.env.CDK_DEFAULT_ACCOUNT,
         region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
     },
-    description: 'Face Recognition Frontend - S3 Website Hosting',
+    description: 'Face Recognition Frontend - AWS Amplify',
 });
 
 // Tags

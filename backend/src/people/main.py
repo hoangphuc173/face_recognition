@@ -1,10 +1,29 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import boto3
 from boto3.dynamodb.conditions import Key
-from ..shared.config import settings
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from shared.config import settings
 
 app = FastAPI()
+
+# CORS configuration
+origins = [
+    "http://localhost:3000",
+    "https://master.d3d0ohwbet4zvk.amplifyapp.com",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 dynamodb = boto3.resource("dynamodb", region_name=settings.AWS_REGION)
 rekognition = boto3.client("rekognition", region_name=settings.AWS_REGION)
@@ -73,12 +92,5 @@ def delete_person(user_id: str):
 
 def handler(event, context):
     result = Mangum(app)(event, context)
-    if isinstance(result, dict):
-        if 'headers' not in result:
-            result['headers'] = {}
-        result['headers'].update({
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
-        })
+    # CORS handled by middleware
     return result

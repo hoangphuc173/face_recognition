@@ -168,6 +168,7 @@ export class MainStack extends cdk.Stack {
     });
 
     const commonEnv = {
+      AWS_REGION: this.region,
       USER_POOL_ID: userPool.userPoolId,
       CLIENT_ID: userPoolClient.userPoolClientId,
       USERS_TABLE: usersTable.tableName,
@@ -217,6 +218,7 @@ export class MainStack extends cdk.Stack {
     }));
 
     // Grant access to UserProfiles table
+    userProfilesTable.grantReadWriteData(authFn);
     userProfilesTable.grantReadWriteData(authFn);
     dynamoKey.grantEncryptDecrypt(authFn);
 

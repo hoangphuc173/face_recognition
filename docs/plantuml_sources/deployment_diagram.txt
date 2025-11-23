@@ -1,0 +1,48 @@
+@startuml
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/General/Client.puml
+!include AWSPuml/NetworkingAndContentDelivery/CloudFront.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+!include AWSPuml/Mobile/APIGateway.puml
+!include AWSPuml/Compute/Lambda.puml
+!include AWSPuml/Database/DynamoDB.puml
+
+title Deployment Diagram
+
+node "Client Device" {
+    Client(browser, "Web/Desktop App", "React/Electron")
+}
+
+package "AWS Cloud" {
+    package "Frontend Hosting" {
+        CloudFront(cf, "CloudFront", "CDN")
+        SimpleStorageService(webBucket, "Web Bucket", "Static Assets")
+    }
+
+    package "Backend API" {
+        APIGateway(api, "API Gateway", "Regional Endpoint")
+        
+        node "Lambda Functions" {
+            Lambda(fn1, "Auth Function", "Python 3.11")
+            Lambda(fn2, "Enroll Function", "Python 3.11")
+            Lambda(fn3, "Identify Function", "Python 3.11")
+        }
+    }
+
+    package "Data Persistence" {
+        DynamoDB(db, "DynamoDB Tables", "On-Demand")
+    }
+}
+
+browser --> cf : HTTPS (Frontend)
+cf --> webBucket : Origin
+browser --> api : HTTPS (API Calls)
+api --> fn1
+api --> fn2
+api --> fn3
+fn1 --> db
+fn2 --> db
+fn3 --> db
+
+@enduml

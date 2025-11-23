@@ -1,0 +1,32 @@
+{
+    "resource": "/auth/token",
+    "path": "/auth/token",
+    "httpMethod": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body": "{\"username\": \"admin\", \"password\": \"Admin123!@#\"}",
+    "isBase64Encoded": false,
+    "requestContext": {
+        "resourceId": "123456",
+        "apiId": "1234567890",
+        "resourcePath": "/auth/token",
+        "httpMethod": "POST",
+        "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
+        "accountId": "123456789012",
+        "identity": {
+            "apiKey": null,
+            "userArn": null,
+            "iamUserArn": null,
+            "caller": null,
+            "userAgent": "Custom User Agent String",
+            "user": null,
+            "cognitoIdentityPoolId": null,
+            "cognitoIdentityId": null,
+            "cognitoAuthenticationProvider": null,
+            "sourceIp": "127.0.0.1",
+            "accountId": null
+        },
+        "stage": "prod"
+    }
+}

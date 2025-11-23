@@ -21,9 +21,15 @@ from shared.otp_manager import OTPManager
 app = FastAPI(title="Face Recognition Auth API")
 
 # CORS configuration
+origins = [
+    "http://localhost:3000",
+    "https://master.d3d0ohwbet4zvk.amplifyapp.com",
+    "*" # Keep wildcard for now to be safe, but specific origins are better for credentials
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
