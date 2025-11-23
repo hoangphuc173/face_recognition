@@ -199,45 +199,56 @@ export default function EnrollPage() {
 
         console.log('Enrolling:', { username, fileSize: file!.size });
 
-        const formData = new FormData();
-        formData.append('name', fullName || username);
-        formData.append('user_id', username);
-        formData.append('file', file!);
+        // Convert File to base64 to avoid binary corruption
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64 = (reader.result as string).split(',')[1]; // Remove data:image/jpeg;base64, prefix
 
-        try {
-            const response = await enroll.enrollUser(formData);
-            console.log('Success:', response);
-            setMessage({ type: 'success', text: '✅ Person enrolled successfully!' });
+            const formData = new FormData();
+            formData.append('name', fullName || username);
+            formData.append('user_id', username);
+            formData.append('image_base64', base64); // Send as base64 text instead of binary File
 
-            setTimeout(() => {
-                router.push('/people');
-            }, 2000);
-        } catch (err: any) {
-            console.error('Error:', err);
-            const detail = err.response?.data?.detail;
-            const errorDetail = typeof detail === 'object'
-                ? JSON.stringify(detail)
-                : (detail || err.message || 'Unknown error');
+            try {
+                const response = await enroll.enrollUser(formData);
+                console.log('Success:', response);
+                setMessage({ type: 'success', text: '✅ Person enrolled successfully!' });
 
-            console.log('Error detail:', errorDetail);
+                setTimeout(() => {
+                    router.push('/people');
+                }, 2000);
+            } catch (err: any) {
+                console.error('Error:', err);
+                const detail = err.response?.data?.detail;
+                const errorDetail = typeof detail === 'object'
+                    ? JSON.stringify(detail)
+                    : (detail || err.message || 'Unknown error');
 
-            let errorMessage = '❌ Enrollment failed: ';
+                console.log('Error detail:', errorDetail);
 
-            if (typeof errorDetail === 'string' && errorDetail.toLowerCase().includes('no face')) {
-                errorMessage += 'No face detected in image. Please ensure:\n• Face is clearly visible\n• Good lighting\n• Face is front-facing\n• No obstructions (glasses, mask, etc.)';
-            } else if (typeof errorDetail === 'string' && (errorDetail.toLowerCase().includes('401') || errorDetail.toLowerCase().includes('unauthorized'))) {
-                errorMessage += 'Please log in again.';
-            } else {
-                errorMessage += errorDetail;
+                let errorMessage = '❌ Enrollment failed: ';
+
+                if (typeof errorDetail === 'string' && errorDetail.toLowerCase().includes('no face')) {
+                    errorMessage += 'No face detected in image. Please ensure:\n• Face is clearly visible\n• Good lighting\n• Face is front-facing\n• No obstructions (glasses, mask, etc.)';
+                } else if (typeof errorDetail === 'string' && (errorDetail.toLowerCase().includes('401') || errorDetail.toLowerCase().includes('unauthorized'))) {
+                    errorMessage += 'Please log in again.';
+                } else {
+                    errorMessage += errorDetail;
+                }
+
+                setMessage({
+                    type: 'error',
+                    text: errorMessage,
+                });
+            } finally {
+                setIsLoading(false);
             }
-
-            setMessage({
-                type: 'error',
-                text: errorMessage,
-            });
-        } finally {
+        };
+        reader.onerror = () => {
+            setMessage({ type: 'error', text: 'Failed to read image file' });
             setIsLoading(false);
-        }
+        };
+        reader.readAsDataURL(file!);
     };
 
     const statusMessages = {

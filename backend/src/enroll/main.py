@@ -33,12 +33,28 @@ rekognition = boto3.client("rekognition", region_name=settings.AWS_REGION)
 
 @app.post("/enroll")
 async def enroll_user(
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
+    image_base64: str = Form(None),
     name: str = Form(...),
     user_id: str = Form(None) # Optional, generate if not provided
 ):
-    print(f"Enroll request - name: {name}, user_id: {user_id}, file: {file.filename}, content_type: {file.content_type}")
-    contents = await file.read()
+    print(f"Enroll request - name: {name}, user_id: {user_id}")
+    
+    # Get image contents from either file or base64
+    if image_base64:
+        print(f"Received base64 image, length: {len(image_base64)}")
+        import base64
+        try:
+            contents = base64.b64decode(image_base64)
+        except Exception as e:
+            print(f"Base64 decode error: {e}")
+            raise HTTPException(status_code=400, detail=f"Invalid base64 data: {str(e)}")
+    elif file:
+        print(f"Received file: {file.filename}, content_type: {file.content_type}")
+        contents = await file.read()
+    else:
+        raise HTTPException(status_code=400, detail="No image provided (neither file nor base64)")
+    
     print(f"File size: {len(contents)} bytes")
     print(f"First 20 bytes: {contents[:20].hex()}")
     
