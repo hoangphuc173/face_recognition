@@ -43,6 +43,7 @@ export const enroll = {
     enrollUser: (formData: FormData) =>
         api.post('/enroll', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
+            transformRequest: [(data) => data], // Prevent axios from transforming binary data
         }),
 };
 
@@ -50,6 +51,7 @@ export const identify = {
     identifyFace: (formData: FormData) =>
         api.post('/identify', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
+            transformRequest: [(data) => data], // Prevent axios from transforming binary data
         }),
 };
 
