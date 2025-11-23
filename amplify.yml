@@ -1,17 +1,18 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - cd frontend/web
-        - npm install
-    build:
-      commands:
-        - npm run export
-  artifacts:
-    baseDirectory: frontend/web/out
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - frontend/web/node_modules/**/*
+applications:
+  - appRoot: frontend/web
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm install
+        build:
+          commands:
+            - npm run export
+      artifacts:
+        baseDirectory: out
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
