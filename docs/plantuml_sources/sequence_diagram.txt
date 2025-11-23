@@ -1,24 +1,44 @@
 @startuml
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam linetype ortho
+
 actor User as U
 participant "API Gateway" as API
-participant "Identify Lambda" as L
+participant "Identify\nLambda" as L
+participant "S3 Bucket\n(Raw)" as S3
 participant "Rekognition" as R
-participant "DynamoDB" as DB
-participant "Logs DB" as LDB
+participant "DynamoDB\n(Users)" as DB
+participant "DynamoDB\n(Logs)" as LDB
+participant "KMS" as KMS
 
 U -> API: POST /identify (Image)
 activate API
+
 API -> L: Invoke Lambda
 activate L
 
+L -> S3: Store Image
+activate S3
+S3 -> KMS: Decrypt Key
+activate KMS
+KMS --> S3: Key
+deactivate KMS
+S3 --> L: Success
+deactivate S3
+
 L -> R: SearchFacesByImage(Image)
 activate R
-R --> L: Face Matches (FaceId, Confidence)
+R --> L: Face Matches\n(FaceId, Confidence)
 deactivate R
 
 alt Face Found
     L -> DB: GetItem(FaceId)
     activate DB
+    DB -> KMS: Decrypt Data
+    activate KMS
+    KMS --> DB: Key
+    deactivate KMS
     DB --> L: User Details
     deactivate DB
     

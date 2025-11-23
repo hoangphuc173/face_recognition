@@ -80,11 +80,11 @@ async def enroll_user(
     s3.put_object(Bucket=settings.S3_BUCKET_RAW, Key=key_raw, Body=contents)
     s3.put_object(Bucket=settings.S3_BUCKET_PROCESSED, Key=key_processed, Body=processed_image)
     
-    # Index Face
+    # Index Face - use Bytes directly instead of S3 to avoid region/permission issues
     try:
         response = rekognition.index_faces(
             CollectionId=settings.REKOGNITION_COLLECTION_ID,
-            Image={'S3Object': {'Bucket': settings.S3_BUCKET_PROCESSED, 'Name': key_processed}},
+            Image={'Bytes': processed_image},
             ExternalImageId=user_id,
             DetectionAttributes=['ALL']
         )

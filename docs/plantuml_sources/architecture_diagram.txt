@@ -10,6 +10,10 @@
 !include AWSPuml/SecurityIdentityCompliance/Cognito.puml
 !include AWSPuml/SecurityIdentityCompliance/KeyManagementService.puml
 
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+
 title Face Recognition System Architecture
 
 left to right direction
@@ -20,57 +24,57 @@ actor "Admin" as admin
 package "AWS Cloud" {
     package "Public Zone" {
         APIGateway(api, "API Gateway", "REST API")
-        Cognito(cognito, "Cognito User Pool", "Auth & Users")
+        Cognito(cognito, "Cognito", "Auth")
     }
 
-    package "Compute Layer (Serverless)" {
-        Lambda(authFn, "Auth Handler", "User Mgmt")
-        Lambda(enrollFn, "Enroll Handler", "Face Indexing")
-        Lambda(identifyFn, "Identify Handler", "Face Search")
-        Lambda(peopleFn, "People Handler", "Profile Mgmt")
-        Lambda(loggingFn, "Logging Handler", "Access Logs")
+    package "Compute Layer" {
+        Lambda(authFn, "Auth", "Handler")
+        Lambda(enrollFn, "Enroll", "Handler")
+        Lambda(identifyFn, "Identify", "Handler")
+        Lambda(peopleFn, "People", "Handler")
+        Lambda(loggingFn, "Logging", "Handler")
     }
 
-    package "Storage & Data Layer" {
+    package "Storage & Data" {
         SimpleStorageService(rawBucket, "Raw Bucket", "Images")
-        SimpleStorageService(processedBucket, "Processed Bucket", "Thumbnails")
+        SimpleStorageService(processedBucket, "Processed", "Bucket")
         
-        DynamoDB(usersTable, "Users Table", "Metadata")
-        DynamoDB(logsTable, "Access Logs", "History")
-        DynamoDB(profilesTable, "User Profiles", "Details")
+        DynamoDB(usersTable, "Users", "Table")
+        DynamoDB(logsTable, "Logs", "Table")
+        DynamoDB(profilesTable, "Profiles", "Table")
         
-        Rekognition(rekognition, "Rekognition", "Face Collection")
+        Rekognition(rekognition, "Rekognition", "Collection")
     }
     
     package "Security" {
-        KeyManagementService(kms, "KMS", "Encryption Keys")
+        KeyManagementService(kms, "KMS", "Keys")
     }
 }
 
-user --> api : HTTPS
-admin --> api : HTTPS
+user -down-> api
+admin -down-> api
 
-api --> authFn : /auth
-api --> enrollFn : /enroll
-api --> identifyFn : /identify
-api --> peopleFn : /people
-api --> loggingFn : /logs
+api -down-> authFn
+api -down-> enrollFn
+api -down-> identifyFn
+api -down-> peopleFn
+api -down-> loggingFn
 
-authFn --> cognito : Auth/User Mgmt
-authFn --> profilesTable : Read/Write
+authFn -down-> cognito
+authFn -down-> profilesTable
 
-enrollFn --> rawBucket : Upload Image
-enrollFn --> rekognition : IndexFaces
-enrollFn --> usersTable : Save Metadata
-enrollFn --> kms : Decrypt
+enrollFn -down-> rawBucket
+enrollFn -down-> rekognition
+enrollFn -down-> usersTable
+enrollFn -down-> kms
 
-identifyFn --> rekognition : SearchFacesByImage
-identifyFn --> usersTable : Lookup User
-identifyFn --> logsTable : Record Log
+identifyFn -down-> rekognition
+identifyFn -down-> usersTable
+identifyFn -down-> logsTable
 
-peopleFn --> usersTable : Update/Delete
-peopleFn --> rekognition : DeleteFaces
+peopleFn -down-> usersTable
+peopleFn -down-> rekognition
 
-loggingFn --> logsTable : Read Logs
+loggingFn -down-> logsTable
 
 @enduml

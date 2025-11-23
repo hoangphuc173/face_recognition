@@ -29,8 +29,8 @@ export default function PeoplePage() {
         if (searchTerm) {
             const filtered = users.filter(
                 (user) =>
-                    user.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    user.person_id.toLowerCase().includes(searchTerm.toLowerCase())
+                    (user.user_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (user.person_id || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredUsers(filtered);
         } else {
@@ -162,7 +162,7 @@ export default function PeoplePage() {
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                                                 <span className="text-white font-bold text-lg">
-                                                    {user.user_name.charAt(0).toUpperCase()}
+                                                    {(user.user_name || '?').charAt(0).toUpperCase()}
                                                 </span>
                                             </div>
                                             <div>
@@ -207,7 +207,7 @@ export default function PeoplePage() {
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                                                             <span className="text-white font-bold">
-                                                                {user.user_name.charAt(0).toUpperCase()}
+                                                                {(user.user_name || '?').charAt(0).toUpperCase()}
                                                             </span>
                                                         </div>
                                                         <span className="text-white font-medium">{user.user_name}</span>

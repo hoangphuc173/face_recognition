@@ -8,10 +8,14 @@
 !include AWSPuml/Compute/Lambda.puml
 !include AWSPuml/Database/DynamoDB.puml
 
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 70
+
 title Deployment Diagram
 
 node "Client Device" {
-    Client(browser, "Web/Desktop App", "React/Electron")
+    Client(browser, "Web/Desktop", "React/Electron")
 }
 
 package "AWS Cloud" {
@@ -21,28 +25,28 @@ package "AWS Cloud" {
     }
 
     package "Backend API" {
-        APIGateway(api, "API Gateway", "Regional Endpoint")
+        APIGateway(api, "API Gateway", "REST API")
         
         node "Lambda Functions" {
-            Lambda(fn1, "Auth Function", "Python 3.11")
-            Lambda(fn2, "Enroll Function", "Python 3.11")
-            Lambda(fn3, "Identify Function", "Python 3.11")
+            Lambda(fn1, "Auth", "Python 3.11")
+            Lambda(fn2, "Enroll", "Python 3.11")
+            Lambda(fn3, "Identify", "Python 3.11")
         }
     }
 
     package "Data Persistence" {
-        DynamoDB(db, "DynamoDB Tables", "On-Demand")
+        DynamoDB(db, "DynamoDB", "Tables")
     }
 }
 
-browser --> cf : HTTPS (Frontend)
-cf --> webBucket : Origin
-browser --> api : HTTPS (API Calls)
-api --> fn1
-api --> fn2
-api --> fn3
-fn1 --> db
-fn2 --> db
-fn3 --> db
+browser -down-> cf : HTTPS
+cf -down-> webBucket
+browser -down-> api : HTTPS
+api -down-> fn1
+api -down-> fn2
+api -down-> fn3
+fn1 -down-> db
+fn2 -down-> db
+fn3 -down-> db
 
 @enduml

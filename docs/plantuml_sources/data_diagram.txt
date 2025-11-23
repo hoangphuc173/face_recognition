@@ -1,6 +1,8 @@
 @startuml
 hide circle
 skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 100
 
 entity "USERS" as users {
   *UserId : string <<PK>>
@@ -36,7 +38,7 @@ entity "OTP_VERIFICATION" as otp {
   TTL : int
 }
 
-users ||..|| profiles : "has details"
-users ||..o{ logs : "generates"
-users ||..o{ otp : "verifies"
+users ||--|| profiles : "has details"
+users ||--o{ logs : "generates"
+users ||--o{ otp : "verifies"
 @enduml
