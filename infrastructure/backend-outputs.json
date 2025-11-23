@@ -1,0 +1,8 @@
+{
+  "FaceRecogBackendStack": {
+    "UserPoolClientId": "48g9mt2ksa356tod8ootrau9u0",
+    "ApiUrl": "https://54bpk3wr20.execute-api.ap-southeast-1.amazonaws.com/prod/",
+    "UserPoolId": "ap-southeast-1_X8y0FiuqS",
+    "FaceRecogApiEndpoint284F5164": "https://54bpk3wr20.execute-api.ap-southeast-1.amazonaws.com/prod/"
+  }
+}

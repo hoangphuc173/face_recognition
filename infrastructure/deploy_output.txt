@@ -1,0 +1,40 @@
+
+✨  Synthesis time: 15.7s
+
+FaceRecognitionStack: deploying... [1/1]
+
+ ✅  FaceRecognitionStack (no changes)
+
+✨  Deployment time: 1.73s
+
+Outputs:
+FaceRecognitionStack.ApiUrl = https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/
+FaceRecognitionStack.FaceRecogApiEndpoint284F5164 = https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/
+FaceRecognitionStack.UserPoolClientId = ihqnm7pml2nes3047e2rct2qf
+FaceRecognitionStack.UserPoolId = ap-southeast-1_uPp7yneSO
+Stack ARN:
+arn:aws:cloudformation:ap-southeast-1:758934444761:stack/FaceRecognitionStack/b2fab380-c6b5-11f0-b5f9-0a6aeeb54c69
+
+✨  Total time: 17.42s
+
+
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+34892	CDK CLI will collect telemetry data on command usage starting at version 2.1100.0 (unless opted out)
+
+	Overview: We do not collect customer content and we anonymize the
+	          telemetry we do collect. See the attached issue for more
+	          information on what data is collected, why, and how to
+	          opt-out. Telemetry will NOT be collected for any CDK CLI
+	          version prior to version 2.1100.0 - regardless of
+	          opt-in/out. You can also preview the telemetry we will start
+	          collecting by logging it to a local file, by adding
+	          `--unstable=telemetry --telemetry-file=my/local/file` to any
+	          `cdk` command.
+
+	Affected versions: cli: ^2.0.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/34892
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 34892".

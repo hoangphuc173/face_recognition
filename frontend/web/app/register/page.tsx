@@ -23,6 +23,7 @@ export default function Register() {
         otp: '',
         full_name: '',
         gender: '',
+        birth_year: '',
         hometown: '',
         current_address: ''
     });
@@ -44,12 +45,17 @@ export default function Register() {
                 password: formData.password,
                 full_name: formData.full_name,
                 gender: formData.gender,
+                birth_year: formData.birth_year,
                 hometown: formData.hometown,
                 current_address: formData.current_address
             });
             setStep(2); // Move to verification step
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+            const detail = err.response?.data?.detail;
+            const errorMessage = typeof detail === 'object'
+                ? JSON.stringify(detail)
+                : (detail || 'Registration failed. Please try again.');
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +72,11 @@ export default function Register() {
             // Success! Redirect to login
             router.push('/?registered=true');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Verification failed. Please check the code.');
+            const detail = err.response?.data?.detail;
+            const errorMessage = typeof detail === 'object'
+                ? JSON.stringify(detail)
+                : (detail || 'Verification failed. Please check the code.');
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -143,20 +153,30 @@ export default function Register() {
                                 required
                             />
 
-                            <div className="space-y-2">
-                                <label htmlFor="gender" className="block text-sm font-medium text-gray-300">Gender</label>
-                                <select
-                                    id="gender"
-                                    value={formData.gender}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label htmlFor="gender" className="block text-sm font-medium text-gray-300">Gender</label>
+                                    <select
+                                        id="gender"
+                                        value={formData.gender}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white transition-all"
+                                        required
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <Input
+                                    id="birth_year"
+                                    label="Birth Year"
+                                    placeholder="YYYY"
+                                    value={formData.birth_year}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white transition-all"
                                     required
-                                >
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                                />
                             </div>
 
                             <Input

@@ -1,0 +1,8 @@
+{
+  "FaceRecognitionStack": {
+    "UserPoolClientId": "ihqnm7pml2nes3047e2rct2qf",
+    "ApiUrl": "https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/",
+    "UserPoolId": "ap-southeast-1_uPp7yneSO",
+    "FaceRecogApiEndpoint284F5164": "https://a6mo8694xe.execute-api.ap-southeast-1.amazonaws.com/prod/"
+  }
+}

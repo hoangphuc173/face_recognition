@@ -10,7 +10,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/  <-- Commented out to allow CDK lib folder
+
 lib64/
 parts/
 sdist/
@@ -25,6 +26,18 @@ wheels/
 venv/
 ENV/
 env/
+
+# Lambda Layers (large compiled dependencies)
+backend/layer/
+backend/layer_v2/
+backend/dummy_layer/
+*.zip
+
+# Rust/Tauri build artifacts
+frontend/desktop/src-tauri/target/
+**/target/debug/
+**/target/release/
+*.pdb
 
 # IDE
 .vscode/
@@ -43,6 +56,8 @@ data/models/
 *.pkl
 *.h5
 *.pth
+local_data/
+
 
 # Logs
 *.log
@@ -68,3 +83,41 @@ htmlcov/
 
 # Docker
 .dockerignore
+
+# AWS CDK
+cdk.out/
+
+# Demos
+demos/*.mp4
+demos/*.jpg
+
+# Test files and responses
+test-*.json
+test_*.py
+*_test.py
+lambda_*.json
+response*.json
+cors-*.json
+id_token.txt
+decode_logs.py
+verify_profile.py
+local_server.py
+
+# Media recordings
+*.mp4
+*.avi
+*.mov
+fake_image.jpg
+
+# Environment files (protect sensitive data)
+environments/**/*.env
+!environments/**/*.env.example
+.env
+.env.*
+!.env.example
+
+# Temporary JSON files in root (only allow specific config files)
+/*.json
+!package.json
+!tsconfig.json
+!amplify.yml
