@@ -192,8 +192,9 @@ export default function EnrollPage() {
         console.log('Enrolling:', { username, fileSize: file!.size });
 
         const formData = new FormData();
-        formData.append('user_name', username);
-        formData.append('image', file!);
+        formData.append('name', fullName || username);
+        formData.append('user_id', username);
+        formData.append('file', file!);
 
         try {
             const response = await enroll.enrollUser(formData);
