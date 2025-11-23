@@ -8,11 +8,24 @@ class ImageQualityError(Exception):
     pass
 
 def validate_image(image_bytes: bytes) -> bool:
+    """Validate that the bytes represent a valid image"""
     try:
+        # Try to open the image
         img = Image.open(io.BytesIO(image_bytes))
-        img.verify()
+        
+        # Load the image data (this will verify it's valid)
+        img.load()
+        
+        # Check format and size
+        if img.format not in ['JPEG', 'PNG', 'JPG', 'WEBP']:
+            print(f"Unsupported format: {img.format}")
+            return False
+        if img.size[0] < 50 or img.size[1] < 50:
+            print(f"Image too small: {img.size}")
+            return False
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Image validation error: {e}")
         return False
 
 def check_face_quality_rekognition(image_bytes: bytes):

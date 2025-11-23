@@ -115,14 +115,19 @@ export default function EnrollPage() {
             if (webcamRef.current) {
                 const imageSrc = webcamRef.current.getScreenshot();
                 if (imageSrc) {
-                    fetch(imageSrc)
-                        .then((res) => res.blob())
-                        .then((blob) => {
-                            const capturedFile = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
-                            setFile(capturedFile);
-                            setPreview(imageSrc);
-                            setUseWebcam(false);
-                        });
+                    // Convert base64 to blob properly
+                    const base64Data = imageSrc.split(',')[1];
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                    const capturedFile = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+                    setFile(capturedFile);
+                    setPreview(imageSrc);
+                    setUseWebcam(false);
                 }
             }
             setCountdown(null);
@@ -168,14 +173,19 @@ export default function EnrollPage() {
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
             if (imageSrc) {
-                fetch(imageSrc)
-                    .then((res) => res.blob())
-                    .then((blob) => {
-                        const capturedFile = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
-                        setFile(capturedFile);
-                        setPreview(imageSrc);
-                        setUseWebcam(false);
-                    });
+                // Convert base64 to blob properly
+                const base64Data = imageSrc.split(',')[1];
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                const capturedFile = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+                setFile(capturedFile);
+                setPreview(imageSrc);
+                setUseWebcam(false);
             }
         }
     };
