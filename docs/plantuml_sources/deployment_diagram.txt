@@ -1,12 +1,11 @@
 @startuml
-!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
-!include AWSPuml/AWSCommon.puml
-!include AWSPuml/General/Client.puml
-!include AWSPuml/NetworkingAndContentDelivery/CloudFront.puml
-!include AWSPuml/Storage/SimpleStorageService.puml
-!include AWSPuml/Mobile/APIGateway.puml
-!include AWSPuml/Compute/Lambda.puml
-!include AWSPuml/Database/DynamoDB.puml
+!include <aws/common>
+!include <aws/General/Client>
+!include <aws/NetworkingAndContentDelivery/CloudFront>
+!include <aws/Storage/SimpleStorageService>
+!include <aws/Mobile/APIGateway>
+!include <aws/Compute/Lambda>
+!include <aws/Database/DynamoDB>
 
 skinparam linetype ortho
 skinparam nodesep 50

@@ -24,19 +24,20 @@ export default function IdentifyPage() {
             if (imageSrc) {
                 setIsProcessing(true);
                 try {
-                    const res = await fetch(imageSrc);
-                    const blob = await res.blob();
+                    // Extract base64 data (remove data:image/jpeg;base64, prefix)
+                    const base64 = imageSrc.split(',')[1];
+
                     const formData = new FormData();
-                    formData.append('image', blob, 'capture.jpg');
+                    formData.append('image_base64', base64);
 
                     const response = await identify.identifyFace(formData);
-                    setMatches(response.data.faces);
+                    setMatches(response.data.matches || []); // Backend returns { matches: [...] }
 
                     // Update stats
                     setStats(prev => ({
                         totalIdentifications: prev.totalIdentifications + 1,
-                        successfulMatches: response.data.faces.length > 0 ? prev.successfulMatches + 1 : prev.successfulMatches,
-                        lastIdentified: response.data.faces[0] || null
+                        successfulMatches: (response.data.matches && response.data.matches.length > 0) ? prev.successfulMatches + 1 : prev.successfulMatches,
+                        lastIdentified: (response.data.matches && response.data.matches.length > 0) ? response.data.matches[0] : prev.lastIdentified
                     }));
                 } catch (err) {
                     console.error(err);

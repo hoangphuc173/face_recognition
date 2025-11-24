@@ -1,14 +1,13 @@
 @startuml
-!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
-!include AWSPuml/AWSCommon.puml
-!include AWSPuml/General/User.puml
-!include AWSPuml/Mobile/APIGateway.puml
-!include AWSPuml/Compute/Lambda.puml
-!include AWSPuml/Database/DynamoDB.puml
-!include AWSPuml/Storage/SimpleStorageService.puml
-!include AWSPuml/MachineLearning/Rekognition.puml
-!include AWSPuml/SecurityIdentityCompliance/Cognito.puml
-!include AWSPuml/SecurityIdentityCompliance/KeyManagementService.puml
+!include <aws/common>
+!include <aws/General/User>
+!include <aws/Mobile/APIGateway>
+!include <aws/Compute/Lambda>
+!include <aws/Database/DynamoDB>
+!include <aws/Storage/SimpleStorageService>
+!include <aws/MachineLearning/Rekognition>
+!include <aws/SecurityIdentityCompliance/Cognito>
+!include <aws/SecurityIdentityCompliance/KeyManagementService>
 
 skinparam linetype ortho
 skinparam nodesep 60

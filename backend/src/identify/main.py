@@ -31,8 +31,21 @@ rekognition = boto3.client("rekognition", region_name=settings.AWS_REGION)
 dynamodb = boto3.resource("dynamodb", region_name=settings.AWS_REGION)
 
 @app.post("/identify")
-async def identify_face(file: UploadFile = File(...)):
-    contents = await file.read()
+async def identify_face(
+    file: UploadFile = File(None),
+    image_base64: str = Form(None)
+):
+    # Get image contents from either file or base64
+    if image_base64:
+        import base64
+        try:
+            contents = base64.b64decode(image_base64)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Invalid base64 data: {str(e)}")
+    elif file:
+        contents = await file.read()
+    else:
+        raise HTTPException(status_code=400, detail="No image provided")
     
     try:
         validate_image(contents)
